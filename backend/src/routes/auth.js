@@ -1,7 +1,7 @@
 import express from "express"
 import Joi from "joi"
-import bcrypt from "bcrypt"
-import {pool} from "../lib/db.js"
+import { emailExists, createUser  } from "../controllers/signup.js"
+import { authenticateUser } from "../controllers/login.js";
 const router = express.Router();
 
 
@@ -21,37 +21,10 @@ router.post('/signup', async (req, res) => {
         if (error) return res.status(400).send(error.details[0].message);
 
         const {full_name, email, password} = req.body;
+        
+        if (await emailExists(email))  return res.status(400).send("Email already exists");
 
-        const normalizedEmail = email.trim().toLowerCase();
-
-        const [users] = await pool.execute(
-        "SELECT user_id FROM users WHERE email = ? LIMIT 1",
-        [normalizedEmail]
-        );
-
-        if (users.length > 0) {
-        return res.status(400).send("Email already exists");
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const [result] = await pool.execute(
-        `INSERT INTO users (full_name, email, password)
-        VALUES (?, ?, ?)`,
-        [full_name, normalizedEmail, hashedPassword]
-        );
-
-        const userId = result.insertId;
-
-        const [rows] = await pool.execute(
-            `SELECT full_name, email, created_at
-            FROM users
-            WHERE user_id = ?`,
-            [userId]
-        );
-
-        const user = rows[0];
+        const user = await createUser(full_name, email, password);
 
         res.status(201).json({
         full_name: user.full_name,
@@ -69,25 +42,11 @@ router.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
     try {
-        const normalizedEmail = email.trim().toLowerCase();
+        const user = await authenticateUser(email, password);
 
-        const [users] = await pool.execute(
-            "SELECT user_id, password, full_name, email, role, created_at FROM users WHERE email = ? LIMIT 1",
-            [normalizedEmail]
-        );
+        if (!user) return res.status(400).send("Invalid email or password");
 
-        if (users.length === 0) {
-            return res.status(400).send("Invalid email or password");
-        }
-
-        const user = users[0];
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).send("Invalid email or password");
-        }
-
-        res.status(201).json({
+        res.status(200).json({
         full_name: user.full_name,
         email: user.email,
         role: user.role,
