@@ -31,7 +31,7 @@ async function createUser(fullName, email, password) {
     const userId = result.insertId;
 
     const [rows] = await pool.execute(
-        `SELECT full_name, email, created_at
+        `SELECT user_id, full_name, email, created_at, role
         FROM users
         WHERE user_id = ?`,
         [userId]
@@ -39,7 +39,7 @@ async function createUser(fullName, email, password) {
 
     const user = rows[0];
 
-    return user;
+    return { user, userId };
 }
 
 export { emailExists, createUser };

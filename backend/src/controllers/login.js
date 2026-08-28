@@ -20,13 +20,14 @@ async function authenticateUser(email, password) {
 
     if (users.length === 0) return null;
     
-    let user = users[0];
+    const user = users[0];
+    const userId = user.user_id;
     
     const isMatch = await bcrypt.compare(password, user.password);
     
     if (!isMatch) return null;
 
-    return user;
+    return { user, userId };
 }
 
 export { authenticateUser };
