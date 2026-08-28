@@ -3,7 +3,28 @@ import Joi from "joi"
 import { emailExists, createUser  } from "../controllers/signup.js"
 import { authenticateUser } from "../controllers/login.js";
 import { generateAuthToken } from "../utils/jwt.js";
+import { auth } from "../middleware/auth.js";
+import { pool } from "../lib/db.js";
 const router = express.Router();
+
+router.get("/me", auth, async (req, res) => {
+    const [users] = await pool.execute(
+        `SELECT
+            user_id,
+            full_name,
+            email,
+            role,
+            created_at
+        FROM users
+        WHERE user_id = ?
+        LIMIT 1`,
+        [req.user.userId]
+    );
+
+    if (users.length === 0)  return res.status(404).send("User not found");
+    
+    res.json(users[0]);
+});
 
 
 router.post('/signup', async (req, res) => {
