@@ -5,6 +5,8 @@ import MainLayout from "./pages/MainLayout";
 import ProfilePage from "./pages/ProfilePage";
 import CartPage from "./pages/CartPage";
 import AuthenticationPage from "./pages/AuthenticationPage";
+import WishlistPage from "./pages/WhishlistPage";
+import OrdersPage from "./pages/OrdersPage";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +18,8 @@ const router = createBrowserRouter([
       { path: "cart", element: <CartPage /> },
       { path: "profile", element: <ProfilePage /> },
       { path: "authentication", element: <AuthenticationPage /> },
+      { path: "wishlist", element: <WishlistPage /> },
+      { path: "orders", element: <OrdersPage /> },
     ],
   },
 ]);
