@@ -23,7 +23,8 @@ const SearchInput = () => {
       <InputGroup width="100%" startElement={<BsSearch />}>
         <Input
           ref={ref}
-          borderRadius={10}
+          borderRadius={8}
+          borderWidth="2px"
           placeholder="Search makeups..."
           variant="subtle"
         />

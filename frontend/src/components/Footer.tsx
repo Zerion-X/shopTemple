@@ -31,7 +31,7 @@ const Footer = () => {
         </HStack>
 
         <Text fontSize="sm" color="gray.500">
-          © {new Date().getFullYear()} ShopTemple. All rights reserved.
+          {"\u00A9"} {new Date().getFullYear()} ShopTemple. All rights reserved.
         </Text>
       </VStack>
     </Box>

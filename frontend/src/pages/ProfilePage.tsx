@@ -16,7 +16,7 @@ const ProfilePage = () => {
   // karia change this
   const user = {
     full_name: "Test User",
-    email: "test@test.com",
+    email: "test@gmail.com",
     address: "123 Main St, Baku, Azerbaijan",
   };
 
@@ -53,10 +53,7 @@ const ProfilePage = () => {
           <Button
             flex="1"
             variant="outline"
-            borderColor="cyan"
             borderWidth="2px"
-            color="cyan"
-            _hover={{ bg: "cyan", color: "bg" }}
             onClick={() => navigate("/orders")}
           >
             Orders
