@@ -62,9 +62,11 @@ router.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
     try {
-        const { user, userId } = await authenticateUser(email, password);
+        const result = await authenticateUser(email, password);
 
-        if (!user) return res.status(401).send("Invalid email or password");
+        if (!result) return res.status(401).send("Invalid email or password");
+
+        const { user, userId } = result;
 
         const token = generateAuthToken(userId, user.role);
 
