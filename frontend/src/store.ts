@@ -13,7 +13,7 @@ interface UserQueryStore {
 
 const useUserQueryStore = create<UserQueryStore>((set) => ({
   userQuery: {
-    isUserLoggedIn: true,
+    isUserLoggedIn: false,
   },
   setIsUserLoggedIn: (isLoggedIn) =>
     set((store) => ({

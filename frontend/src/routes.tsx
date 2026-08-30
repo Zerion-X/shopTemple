@@ -4,9 +4,10 @@ import ErrorPage from "./pages/ErrorPage";
 import MainLayout from "./pages/MainLayout";
 import ProfilePage from "./pages/ProfilePage";
 import CartPage from "./pages/CartPage";
-import AuthenticationPage from "./pages/AuthenticationPage";
+import LoginPage from "./pages/LoginPage";
 import WishlistPage from "./pages/WhishlistPage";
 import OrdersPage from "./pages/OrdersPage";
+import RegisterPage from "./pages/RegisterPage";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,8 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "cart", element: <CartPage /> },
       { path: "profile", element: <ProfilePage /> },
-      { path: "authentication", element: <AuthenticationPage /> },
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
       { path: "wishlist", element: <WishlistPage /> },
       { path: "orders", element: <OrdersPage /> },
     ],

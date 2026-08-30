@@ -26,7 +26,7 @@ const NavBar = () => {
             </Button>
           </Link>
         ) : (
-          <Link to="/authentication">
+          <Link to="/login">
             <Button variant="subtle">Login</Button>
           </Link>
         )}
