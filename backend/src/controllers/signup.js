@@ -39,7 +39,7 @@ async function createUser(fullName, email, password) {
 
     const user = rows[0];
 
-    return { user, userId };
+    return { user };
 }
 
 export { emailExists, createUser };

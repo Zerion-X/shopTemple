@@ -21,13 +21,12 @@ async function authenticateUser(email, password) {
     if (users.length === 0) return null;
     
     const user = users[0];
-    const userId = user.user_id;
     
     const isMatch = await bcrypt.compare(password, user.password);
     
     if (!isMatch) return null;
 
-    return { user, userId };
+    return user;
 }
 
 export { authenticateUser };

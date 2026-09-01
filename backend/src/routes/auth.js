@@ -2,7 +2,7 @@ import express from "express"
 import Joi from "joi"
 import { emailExists, createUser  } from "../controllers/signup.js"
 import { authenticateUser } from "../controllers/login.js";
-import { generateAuthToken } from "../utils/jwt.js";
+import { generateAuthToken } from "../lib/utils.js";
 import { auth } from "../middleware/auth.js";
 import { pool } from "../lib/db.js";
 const router = express.Router();
@@ -18,7 +18,7 @@ router.get("/me", auth, async (req, res) => {
         FROM users
         WHERE user_id = ?
         LIMIT 1`,
-        [req.user.userId]
+        [req.user.user_id]
     );
 
     if (users.length === 0)  return res.status(404).send("User not found");
@@ -36,12 +36,11 @@ router.post('/signup', async (req, res) => {
         
         if (await emailExists(email))  return res.status(400).send("Email already exists");
 
-        const { user, userId } = await createUser(full_name, email, password);
+        const user = await createUser(full_name, email, password);
 
-        const token = generateAuthToken(userId, user.role);
+        generateAuthToken(user, res);
 
         res
-            .header("x-auth-token", token)
             .status(201)
             .json({
                 user_id: user.user_id,
@@ -66,13 +65,11 @@ router.post('/login', async (req, res) => {
 
         if (!result) return res.status(401).send("Invalid email or password");
 
-        const { user, userId } = result;
+        const user = result;
 
-        const token = generateAuthToken(userId, user.role);
+        generateAuthToken(user, res);
 
-        res
-            .header("x-auth-token", token)
-            .json({
+        res.json({
                 user_id: user.user_id,
                 full_name: user.full_name,
                 email: user.email
@@ -85,8 +82,8 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/logout', async (_, res) => {
+    res.cookie("jwt", "", {maxAge : 0});
     res.status(200).send("Logged out successfully");
-    // needs to be implemented with JWT or session management for proper logout functionality
 });
 
 
