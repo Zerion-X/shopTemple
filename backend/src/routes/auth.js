@@ -28,30 +28,24 @@ router.get("/me", auth, async (req, res) => {
 
 
 router.post('/signup', async (req, res) => {
-    try {
-        const {error} = validate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
+    const {error} = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-        const {full_name, email, password} = req.body;
+    const {full_name, email, password} = req.body;
         
-        if (await emailExists(email))  return res.status(400).send("Email already exists");
+    if (await emailExists(email))  return res.status(400).send("Email already exists");
 
-        const user = await createUser(full_name, email, password);
+    const { user } = await createUser(full_name, email, password);
 
-        generateAuthToken(user, res);
+    generateAuthToken(user, res);
 
-        res
-            .status(201)
-            .json({
-                user_id: user.user_id,
-                full_name: user.full_name,
-                email: user.email
-            });
-
-    } catch (error) {
-        console.error("Error during signup:", error.message);
-        res.status(500).send("Internal Server Error");
-    }
+    res
+        .status(201)
+        .json({
+            user_id: user.user_id,
+            full_name: user.full_name,
+            email: user.email
+        });
 });
 
 router.post('/login', async (req, res) => {
@@ -60,25 +54,19 @@ router.post('/login', async (req, res) => {
 
     const {email, password} = req.body;
 
-    try {
-        const result = await authenticateUser(email, password);
+    const result = await authenticateUser(email, password);
 
-        if (!result) return res.status(401).send("Invalid email or password");
+    if (!result) return res.status(401).send("Invalid email or password");
 
-        const user = result;
+    const user = result;
 
-        generateAuthToken(user, res);
+    generateAuthToken(user, res);
 
-        res.json({
-                user_id: user.user_id,
-                full_name: user.full_name,
-                email: user.email
-            });
-
-    } catch (error) {
-        console.error("Error during login:", error.message);
-        res.status(500).send("Internal Server Error");
-    }
+    res.json({
+            user_id: user.user_id,
+            full_name: user.full_name,
+            email: user.email
+        });
 });
 
 router.post('/logout', async (_, res) => {
