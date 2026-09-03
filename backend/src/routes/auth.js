@@ -4,10 +4,11 @@ import { emailExists, createUser  } from "../controllers/signup.js"
 import { authenticateUser } from "../controllers/login.js";
 import { generateAuthToken } from "../lib/utils.js";
 import { auth } from "../middleware/auth.js";
+import arcjetProtect from "../middleware/arcjet.js";
 import { pool } from "../lib/db.js";
 const router = express.Router();
 
-router.get("/me", auth, async (req, res) => {
+router.get("/me", arcjetProtect, auth, async (req, res) => {
     const [users] = await pool.execute(
         `SELECT
             user_id,
@@ -27,7 +28,7 @@ router.get("/me", auth, async (req, res) => {
 });
 
 
-router.post('/signup', async (req, res) => {
+router.post('/signup',arcjetProtect, async (req, res) => {
     try {
         const {error} = validate(req.body);
         if (error) return res.status(400).send(error.details[0].message);
@@ -54,7 +55,7 @@ router.post('/signup', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', arcjetProtect, async (req, res) => {
     const { error } = validate(req.body, false);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -81,7 +82,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/logout', async (_, res) => {
+router.post('/logout', arcjetProtect, async (_, res) => {
     res.cookie("jwt", "", {maxAge : 0});
     res.status(200).send("Logged out successfully");
 });
