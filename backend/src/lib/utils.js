@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 
 
 function generateAuthToken(user, res) {
+    // console.log(user.role);
+    // console.log(user.user_id);
     const token = jwt.sign({user_id: user.user_id, role: user.role}, process.env.JWT_SECRET, {expiresIn: '1h'});
 
     res.cookie("jwt", token, {
