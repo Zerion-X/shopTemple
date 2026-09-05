@@ -6,6 +6,7 @@ import { generateAuthToken } from "../lib/utils.js";
 import { auth } from "../middleware/auth.js";
 import arcjetProtect from "../middleware/arcjet.js";
 import { pool } from "../lib/db.js";
+import sendMail from "../emails/emailHandlers.js";
 const router = express.Router();
 
 router.get("/me", arcjetProtect, auth, async (req, res) => {
@@ -47,6 +48,12 @@ router.post('/signup',arcjetProtect, async (req, res) => {
             full_name: user.full_name,
             email: user.email
         });
+        
+    try {
+        await sendMail(email, full_name, process.env.CLIENT_URL);
+    } catch (error) {
+        console.error("Error sending welcome email:", error);
+    }
 });
 
 router.post('/login', arcjetProtect, async (req, res) => {
