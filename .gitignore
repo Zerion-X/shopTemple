@@ -3,3 +3,4 @@ backend/.env
 node_modules/
 backend/logfile.log
 backend/uncaughtExceptions.log
+backend/.env.test

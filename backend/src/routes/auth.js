@@ -36,7 +36,7 @@ router.post('/signup',arcjetProtect, async (req, res) => {
         
     if (await emailExists(email))  return res.status(400).send("Email already exists");
 
-    const { user } = await createUser(full_name, email, password);
+    const user = await createUser(full_name, email, password);
 
     generateAuthToken(user, res);
 
@@ -97,3 +97,4 @@ function validate(req, mode=true) { // mode=true -> signup | mode=false -> login
 }
 
 export default router;
+export { validate };
