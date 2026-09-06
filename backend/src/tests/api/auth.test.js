@@ -16,8 +16,8 @@ beforeEach(async () => {
 
 afterEach(async () => {
     await pool.execute(
-        "DELETE FROM users WHERE email = ?",
-        ["test@gmail.com"]
+        "DELETE FROM users WHERE email IN (?, ?)",
+        ["test@gmail.com", "signuptest@gmail.com"]
     );
 });
 
