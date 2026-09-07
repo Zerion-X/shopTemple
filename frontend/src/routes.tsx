@@ -10,11 +10,11 @@ import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminPage from "./pages/AdminPage";
 import CustomerPage from "./pages/CustomerPage";
-import UserManagementPage from "./pages/userManagementPage";
 import CategoryManagementPage from "./pages/CategoryManagementPage";
 import ProductManagementPage from "./pages/ProductManagementPage";
 import AdminLayout from "./pages/AdminLayout";
 import OrderManagementPage from "./pages/OrderManagementPage";
+import UserManagementPage from "./pages/UserManagementPage";
 
 const router = createBrowserRouter([
   {
