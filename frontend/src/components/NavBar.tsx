@@ -1,16 +1,18 @@
-import { Box, Button, HStack, Image, Text } from "@chakra-ui/react";
+import { Box, Button, HStack, Image, Spinner, Text } from "@chakra-ui/react";
 import logo from "../assets/logo.png";
 import { CiShoppingCart } from "react-icons/ci";
 import { ColorModeButton, useColorMode } from "../components/ui/color-mode";
 import SearchInput from "./SearchInput";
+import CategoriesBar from "./CategoriesBar";
 import { Link } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
-import useUserQueryStore from "../store";
-import { categories } from "../constants";
+import useUser from "../hooks/useUser";
 
 const NavBar = () => {
   const { colorMode } = useColorMode();
-  const isUserLoggedIn = useUserQueryStore((s) => s.userQuery.isUserLoggedIn);
+  const { data: user, isFetching } = useUser();
+
+  const isLoggedIn = !!user;
 
   return (
     <>
@@ -18,9 +20,13 @@ const NavBar = () => {
         <Link to="/">
           <Image src={logo} boxSize="60px" />
         </Link>
+
         <SearchInput />
-        {isUserLoggedIn ? (
-          <Link to="/profile">
+
+        {isFetching ? (
+          <Spinner size="sm" />
+        ) : isLoggedIn ? (
+          <Link to={`/${user.role === "admin" ? user.role : "profile"}`}>
             <Button variant="ghost">
               <CgProfile size={20} />
             </Button>
@@ -30,12 +36,15 @@ const NavBar = () => {
             <Button variant="subtle">Login</Button>
           </Link>
         )}
+
         <Link to="/cart">
           <Button variant="ghost">
             <CiShoppingCart size={20} />
           </Button>
         </Link>
+
         <ColorModeButton />
+
         <Text whiteSpace="nowrap">{colorMode}</Text>
       </HStack>
 
@@ -46,21 +55,13 @@ const NavBar = () => {
         paddingX="10px"
         paddingBottom="10px"
         css={{
-          "&::-webkit-scrollbar": { display: "none" },
+          "&::-webkit-scrollbar": {
+            display: "none",
+          },
           scrollbarWidth: "none",
         }}
       >
-        {categories.map((c) => (
-          <Button
-            key={c.id}
-            variant="outline"
-            borderRadius={25}
-            flexShrink={0}
-            borderWidth="2px"
-          >
-            {c.name}
-          </Button>
-        ))}
+        <CategoriesBar />
       </Box>
     </>
   );

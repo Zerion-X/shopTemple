@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import ms from "ms";
-import { get } from "../services/authService";
+import { getMe } from "../services/authService";
 
 const useUser =() => useQuery({
     queryKey: ["profile"],
-        queryFn: get,
-        staleTime:ms("1m") //1 minute
+        queryFn: getMe,
+        staleTime:ms("0"),
+        refetchOnWindowFocus:false,
+        refetchOnMount: "always",
+        retry:false
 });
 
 export default useUser;

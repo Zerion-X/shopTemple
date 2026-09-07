@@ -12,13 +12,13 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useSignup from "../hooks/useSignup";
-import useUserQueryStore from "../store";
 import { isAxiosError } from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { mutate, isPending, error } = useSignup();
-  const setIsUserLoggedIn = useUserQueryStore((s) => s.setIsUserLoggedIn);
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
     full_name: "",
@@ -34,9 +34,8 @@ const RegisterPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutate(formData, {
-      onSuccess: (data) => {
-        setIsUserLoggedIn(true);
-        localStorage.setItem("token", data.token);
+      onSuccess: (user) => {
+        queryClient.setQueryData(["profile"], user);
         navigate("/");
       },
     });
@@ -84,14 +83,9 @@ const RegisterPage = () => {
 
           {error && (
             <Text fontSize="sm" color="red.500">
-              {error && (
-                <Text fontSize="sm" color="red.500">
-                  {isAxiosError(error) &&
-                  typeof error.response?.data === "string"
-                    ? error.response.data
-                    : "Something went wrong. Please try again."}
-                </Text>
-              )}
+              {isAxiosError(error) && typeof error.response?.data === "string"
+                ? error.response.data
+                : "Something went wrong. Please try again."}
             </Text>
           )}
 

@@ -12,12 +12,12 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useLogin from "../hooks/useLogin";
-import useUserQueryStore from "../store";
+import { useQueryClient } from "@tanstack/react-query";
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { mutate, isPending, error } = useLogin();
-  const setIsUserLoggedIn = useUserQueryStore((s) => s.setIsUserLoggedIn);
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -32,10 +32,8 @@ const LoginPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutate(formData, {
-      onSuccess: (data) => {
-        setIsUserLoggedIn(true);
-        localStorage.setItem("token", data.token);
-        console.log("token received:", data.token);
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["profile"] });
         navigate("/");
       },
     });
@@ -56,6 +54,8 @@ const LoginPage = () => {
             <Field.Label>Email</Field.Label>
             <Input
               type="email"
+              name="email"
+              autoComplete="off"
               value={formData.email}
               onChange={handleChange("email")}
               placeholder="john@example.com"
@@ -66,6 +66,8 @@ const LoginPage = () => {
             <Field.Label>Password</Field.Label>
             <Input
               type="password"
+              name="current-password-disabled"
+              autoComplete="new-password"
               value={formData.password}
               onChange={handleChange("password")}
               placeholder="••••••••"

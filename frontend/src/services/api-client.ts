@@ -1,26 +1,8 @@
 import axios, { type AxiosRequestConfig } from "axios";
 
-
-export interface FetchResponse <T>{
-  results: T[];
-}
-
-export interface LoginResponse {
-    user_id:number;
-    full_name:string;
-    email:string;
-    role:string
-    created_at:Date
-}
-
-export interface SignupResponse {
-    user_id:number;
-    full_name:string;
-    email:string;
-}
-
 const axiosInstance = axios.create({
-    baseURL:"http://localhost:3000/api"
+    baseURL:"http://localhost:3000/api",
+    withCredentials:true
 });
 
 class APIClient <T> {
@@ -32,7 +14,7 @@ class APIClient <T> {
 
     getAll = (config:AxiosRequestConfig) => {
         return axiosInstance
-        .get<FetchResponse<T>>(this.endpoint,config)
+        .get<T[]>(this.endpoint,config)
         .then(res => res.data)
     }
 

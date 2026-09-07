@@ -5,5 +5,5 @@ export default interface User {
     password:string;
     role:string;
     created_at:Date;
-    address:string;
+    address?:string;
 }

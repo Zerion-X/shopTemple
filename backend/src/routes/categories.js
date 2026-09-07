@@ -7,7 +7,7 @@ import { pool } from "../lib/db.js";
 const router = express.Router();
 
 
-router.get("/", arcjetProtect, auth, async (req, res) => {
+router.get("/", arcjetProtect, async (req, res) => {
     try {
         const [categories] = await pool.execute("SELECT * FROM categories");
         res.json(categories);
