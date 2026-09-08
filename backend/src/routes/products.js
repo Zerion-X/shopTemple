@@ -3,8 +3,8 @@ import Joi from "joi"
 import { auth } from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js"
 import arcjetProtect from "../middleware/arcjet.js";
-import { validateBrandId } from "../lib/brandValidation.js";
-import { validateCategoryId } from "../lib/categoryValidation.js";
+import validateBrandId from "../lib/brandValidation.js";
+import validateCategoryId from "../lib/categoryValidation.js";
 import { pool } from "../lib/db.js";
 const router = express.Router();
 
