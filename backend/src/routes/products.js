@@ -3,8 +3,12 @@ import Joi from "joi"
 import { auth } from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js"
 import arcjetProtect from "../middleware/arcjet.js";
+import upload from "../middleware/upload.js";
+import { uploadToCloudinary } from "../lib/cloudinaryUpload.js"
+import cloudinary from "../lib/cloudinary.js"
 import validateBrandId from "../lib/brandValidation.js";
 import validateCategoryId from "../lib/categoryValidation.js";
+import validateProductId from "../lib/productValidation.js";
 import { pool } from "../lib/db.js";
 const router = express.Router();
 
@@ -18,7 +22,7 @@ router.get("/", arcjetProtect, async (req, res) => {
     }
 });
 
-router.post("/", arcjetProtect, auth, isAdmin, async (req, res) => {
+router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const { name, description, price, category_id, brand_id } = req.body;
@@ -29,9 +33,23 @@ router.post("/", arcjetProtect, auth, isAdmin, async (req, res) => {
         return res.status(400).json({ error: "Invalid brand_id" });
     }
     try {
+        let imageUrl = null;
+        let imagePublicId = null;
+
+        if (req.file) {
+
+            const result = await uploadToCloudinary(
+                req.file.buffer,
+                "shop-temple/products"
+            );
+
+            imageUrl = result.secure_url;
+            imagePublicId = result.public_id;
+        }
+
         const [result] = await pool.execute(
-            "INSERT INTO products (name, description, price, category_id, brand_id) VALUES (?, ?, ?, ?, ?)",
-            [name, description, price, category_id, brand_id]
+            "INSERT INTO products (name, description, price, category_id, brand_id, image_url, image_public_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [name, description, price, category_id, brand_id, imageUrl, imagePublicId]
         );
         const productId = result.insertId;
         const [rows] = await pool.execute(
@@ -72,8 +90,21 @@ router.put("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
     }
 });
 
-router.patch("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
+router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async (req, res) => {
     const productId = req.params.id;
+
+    const [rows] = await pool.execute(
+        "SELECT * FROM products WHERE product_id = ?",
+        [productId]
+    );
+
+    if (rows.length === 0) {
+        return res.status(404).json({
+            error: "Product not found"
+        });
+    }
+
+    const product = rows[0];
 
     const { error } = validateUpdate(req.body);
 
@@ -81,27 +112,51 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
         return res.status(400).send(error.details[0].message);
     }
 
-    const fieldsToUpdate = req.body;
-    
-    const setClause = Object.keys(fieldsToUpdate)
-        .map((field) => `${field} = ?`)
-        .join(", ");
-
-    const values = Object.values(fieldsToUpdate);
-    values.push(productId);
-
-    if (fieldsToUpdate.category_id && !(await validateCategoryId(fieldsToUpdate.category_id))) {
-        return res.status(400).json({ error: "Invalid category_id" });
-    }
-    if (fieldsToUpdate.brand_id && !(await validateBrandId(fieldsToUpdate.brand_id))) {
-        return res.status(400).json({ error: "Invalid brand_id" });
-    }
-
     try {
+
+        const fieldsToUpdate = req.body;
+
+        let oldImagePublicId = null;
+
+        if (req.file) {
+            const result = await uploadToCloudinary(
+                req.file.buffer,
+                "shop-temple/products"
+            );
+            fieldsToUpdate.image_url = result.secure_url;
+            fieldsToUpdate.image_public_id = result.public_id;
+            oldImagePublicId = product.image_public_id
+        }
+
+        if (Object.keys(fieldsToUpdate).length === 0) {
+            return res.status(400).json({
+                error: "No fields to update"
+            });
+        }
+        
+        const setClause = Object.keys(fieldsToUpdate)
+            .map((field) => `${field} = ?`)
+            .join(", ");
+
+        const values = Object.values(fieldsToUpdate);
+        values.push(productId);
+
+        if (fieldsToUpdate.category_id && !(await validateCategoryId(fieldsToUpdate.category_id))) {
+            return res.status(400).json({ error: "Invalid category_id" });
+        }
+        if (fieldsToUpdate.brand_id && !(await validateBrandId(fieldsToUpdate.brand_id))) {
+            return res.status(400).json({ error: "Invalid brand_id" });
+        }
+
         await pool.execute(
             `UPDATE products SET ${setClause} WHERE product_id = ?`,
             values
         );
+
+        if (oldImagePublicId) {
+            await cloudinary.uploader.destroy(oldImagePublicId);
+        }
+
         const [rows] = await pool.execute(
             "SELECT * FROM products WHERE product_id = ?",
             [productId]
