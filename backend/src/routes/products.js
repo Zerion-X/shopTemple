@@ -14,7 +14,18 @@ const router = express.Router();
 
 router.get("/", arcjetProtect, async (req, res) => {
     try {
-        const [products] = await pool.execute("SELECT * FROM products");
+        const [products] = await pool.execute(`
+            SELECT
+                product_id,
+                name,
+                description,
+                price,
+                created_at,
+                brand_id,
+                category_id,
+                image_url
+            FROM products
+        `);
         res.json(products);
     } catch (error) {
         console.error("Error fetching products:", error);
@@ -63,7 +74,7 @@ router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (re
     }
 });
 
-router.put("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
+router.put("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const { name, description, price, category_id, brand_id } = req.body;
@@ -75,10 +86,43 @@ router.put("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
     }
     const productId = req.params.id;
     try {
-        await pool.execute(
-            "UPDATE products SET name = ?, description = ?, price = ?, category_id = ?, brand_id = ? WHERE product_id = ?",
-            [name, description, price, category_id, brand_id, productId]
+        const [products] = await pool.execute(
+            "SELECT * FROM products WHERE product_id = ?",
+            [productId]
         );
+
+        if (products.length === 0) {
+            return res.status(404).json({
+                error: "Product not found"
+            });
+        }
+
+        const product = products[0];
+
+        let imageUrl = product.image_url;
+        let imagePublicId = product.image_public_id;
+
+        if (req.file) {
+            const result = await uploadToCloudinary(
+                req.file.buffer,
+                "shop-temple/products"
+            );
+
+            imageUrl = result.secure_url;
+            imagePublicId = result.public_id;
+        }
+
+        await pool.execute(
+            "UPDATE products SET name = ?, description = ?, price = ?, category_id = ?, brand_id = ?, image_url = ?, image_public_id = ? WHERE product_id = ?",
+            [name, description, price, category_id, brand_id, imageUrl, imagePublicId, productId]
+        );
+
+        if (req.file && product.image_public_id) {
+            await cloudinary.uploader.destroy(
+                product.image_public_id
+            );
+        }
+
         const [rows] = await pool.execute(
             "SELECT * FROM products WHERE product_id = ?",
             [productId]
@@ -171,8 +215,28 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
 router.delete("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
     const productId = req.params.id;
     try {
+        const [rows] = await pool.execute(
+            "SELECT image_public_id FROM products WHERE product_id = ?",
+            [productId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({
+                error: "Product not found"
+            });
+        }
+
+        const product = rows[0];
+
+        if (product.image_public_id) {
+            await cloudinary.uploader.destroy(
+                product.image_public_id
+            );
+        }
+
         await pool.execute("DELETE FROM products WHERE product_id = ?", [productId]);
         res.status(204).send();
+        
     } catch (error) {
         console.error("Error deleting product:", error);
         res.status(500).json({ error: "Internal server error" });
