@@ -1,5 +1,5 @@
-import express from "express"
-import Joi from "joi"
+import express from "express";
+import Joi from "joi";
 import { auth } from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js"
 import arcjetProtect from "../middleware/arcjet.js";
@@ -9,13 +9,12 @@ import cloudinary from "../lib/cloudinary.js"
 import { pool } from "../lib/db.js";
 const router = express.Router();
 
-
 router.get("/", arcjetProtect, async (req, res) => {
     try {
-        const [categories] = await pool.execute("SELECT category_id, name, image_url FROM categories");
-        res.json(categories);
+        const [brands] = await pool.execute("SELECT brand_id, name, image_url FROM brands");
+        res.json(brands);
     } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("Error fetching brands:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -33,7 +32,7 @@ router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (re
 
             const result = await uploadToCloudinary(
                 req.file.buffer,
-                "shop-temple/categories"
+                "shop-temple/brands"
             );
 
             imageUrl = result.secure_url;
@@ -41,38 +40,38 @@ router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (re
         }
 
         const [result] = await pool.execute(
-            "INSERT INTO categories (name, image_url, image_public_id) VALUES (?, ?, ?)",
+            "INSERT INTO brands (name, image_url, image_public_id) VALUES (?, ?, ?)",
             [name, imageUrl, imagePublicId]
         );
         
-        const categoryId = result.insertId;
+        const brandId = result.insertId;
         const [rows] = await pool.execute(
-            "SELECT * FROM categories WHERE category_id = ?",
-            [categoryId]
+            "SELECT * FROM brands WHERE brand_id = ?",
+            [brandId]
         );
         res.status(201).json(rows[0]);
     } catch (error) {
-        console.error("Error creating category:", error);
+        console.error("Error creating brand:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
 router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async (req, res) => {
-    const categoryId = req.params.id;
+    const brandId = req.params.id;
 
     try {
         const [rows] = await pool.execute(
-            "SELECT * FROM categories WHERE category_id = ?",
-            [categoryId]
+            "SELECT * FROM brands WHERE brand_id = ?",
+            [brandId]
         );
 
         if (rows.length === 0) {
             return res.status(404).json({
-                error: "category not found"
+                error: "Brand not found"
             });
         }
 
-        const category = rows[0];
+        const brand = rows[0];
 
         if (Object.keys(req.body).length > 0) {
             const { error } = validateUpdate(req.body);
@@ -95,13 +94,13 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
         if (req.file) {
             const result = await uploadToCloudinary(
                 req.file.buffer,
-                "shop-temple/categories"
+                "shop-temple/brands"
             );
 
             fieldsToUpdate.image_url = result.secure_url;
             fieldsToUpdate.image_public_id = result.public_id;
 
-            oldImagePublicId = category.image_public_id;
+            oldImagePublicId = brand.image_public_id;
         }
 
         if (Object.keys(fieldsToUpdate).length === 0) {
@@ -115,12 +114,12 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
             .join(", ");
 
         const values = Object.values(fieldsToUpdate);
-        values.push(categoryId);
+        values.push(brandId);
 
         await pool.execute(
-            `UPDATE categories
+            `UPDATE brands
                 SET ${setClause}
-                WHERE category_id = ?`,
+                WHERE brand_id = ?`,
             values
         );
 
@@ -130,17 +129,17 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
 
         const [updatedRows] = await pool.execute(
             `SELECT
-                category_id,
+                brand_id,
                 name,
                 image_url
-                FROM categories
-                WHERE category_id = ?`,
-            [categoryId]
+                FROM brands
+                WHERE brand_id = ?`,
+            [brandId]
         );
 
         return res.json(updatedRows[0]);
     } catch (error) {
-        console.error("Error updating category:", error);
+        console.error("Error updating brand:", error);
 
         return res.status(500).json({
             error: "Internal server error"
@@ -150,38 +149,38 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
 
 router.delete("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
 
-    const categoryId = req.params.id;
+    const brandId = req.params.id;
 
     try {
 
         const [rows] = await pool.execute(
-            "SELECT image_public_id FROM categories WHERE category_id = ?",
-            [categoryId]
+            "SELECT image_public_id FROM brands WHERE brand_id = ?",
+            [brandId]
         );
 
         if (rows.length === 0) {
             return res.status(404).json({
-                error: "category not found"
+                error: "Brand not found"
             });
         }
 
-        const category = rows[0];
+        const brand = rows[0];
 
-        if (category.image_public_id) {
+        if (brand.image_public_id) {
             await cloudinary.uploader.destroy(
-                category.image_public_id
+                brand.image_public_id
             );
         }
 
         await pool.execute(
-            "DELETE FROM categories WHERE category_id = ?",
-            [categoryId]
+            "DELETE FROM brands WHERE brand_id = ?",
+            [brandId]
         );
 
         return res.status(204).send();
 
     } catch (error) {
-        console.error("Error deleting category:", error);
+        console.error("Error deleting brand:", error);
 
         return res.status(500).json({
             error: "Internal server error"
