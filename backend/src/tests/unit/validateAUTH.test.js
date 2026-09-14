@@ -308,4 +308,19 @@ describe("Validating user", () => {
 
     });
 
+    it(`should return "extra" is not allowed if extra were added in request`, () => {
+        const req = {
+            email: "test@gmail.com",
+            password: "12345678",
+            full_name: "test",
+            extra: 123
+        };
+
+        const res = validate(req);
+
+        expect(res.error).toBeDefined();
+
+        expect(res.error.details[0].message).toMatch(`"extra" is not allowed`);
+    });
+
 })

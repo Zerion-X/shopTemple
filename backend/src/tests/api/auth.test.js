@@ -1,8 +1,5 @@
-// CREATE DATABASE shoptemple_test;
-// CREATE TABLE shoptemple_test.users LIKE shoptemple.users;
 import request from "supertest";
 import app from "../../app.js";
-import random from 'string-random';
 import { createUser } from "../../controllers/signup.js";
 import { pool } from "../../lib/db.js";
 
