@@ -2,25 +2,14 @@ import express from "express"
 import Joi from "joi"
 import { emailExists, createUser  } from "../controllers/signup.js"
 import { authenticateUser } from "../controllers/login.js";
+import { getCurrentUser } from "../controllers/user.js";
 import { generateAuthToken } from "../lib/utils.js";
 import { auth } from "../middleware/auth.js";
 import arcjetProtect from "../middleware/arcjet.js";
-import { pool } from "../lib/db.js";
 const router = express.Router();
 
 router.get("/me", arcjetProtect, auth, async (req, res) => {
-    const [users] = await pool.execute(
-        `SELECT
-            user_id,
-            full_name,
-            email,
-            role,
-            created_at
-        FROM users
-        WHERE user_id = ?
-        LIMIT 1`,
-        [req.user.user_id]
-    );
+    const users = await getCurrentUser(req.user.user_id);
 
     if (users.length === 0)  return res.status(404).send("User not found");
     
