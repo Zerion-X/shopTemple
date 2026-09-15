@@ -89,4 +89,14 @@ async function checkDuplicateNameForUpdate(name, categoryId) {
     return rows.length > 0;
 }
 
-export { createCategory, getCategory, checkDuplicateNames, selectCatbyId, updateCat, getUpdatedCatbyId, selectImagePublicId, deleteCatbyId, checkDuplicateNameForUpdate };
+export { 
+    createCategory, 
+    getCategory, 
+    checkDuplicateNames, 
+    selectCatbyId, 
+    updateCat, 
+    getUpdatedCatbyId, 
+    selectImagePublicId, 
+    deleteCatbyId, 
+    checkDuplicateNameForUpdate 
+};

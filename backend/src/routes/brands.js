@@ -4,9 +4,20 @@ import { auth } from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js"
 import arcjetProtect from "../middleware/arcjet.js";
 import upload from "../middleware/upload.js";
-import { uploadToCloudinary } from "../lib/cloudinaryUpload.js"
-import cloudinary from "../lib/cloudinary.js"
-import { getBrands, createBrand, selectBrandbyId, updateBrands, getUpdateBrandbyId, selectImagePublicId, deleteBrandbyId, checkDuplicateNames, checkDuplicateNameForUpdate } from "../controllers/brands.js";
+import { uploadToCloudinary } from "../lib/cloudinaryUpload.js";
+import cloudinary from "../lib/cloudinary.js";
+import { 
+    getBrands, 
+    createBrand, 
+    selectBrandbyId, 
+    updateBrands, 
+    getUpdateBrandbyId, 
+    selectImagePublicId, 
+    deleteBrandbyId, 
+    checkDuplicateNames, 
+    checkDuplicateNameForUpdate 
+} from "../controllers/brands.js";
+
 const router = express.Router();
 
 router.get("/", arcjetProtect, async (req, res) => {

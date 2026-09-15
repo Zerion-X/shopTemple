@@ -1,12 +1,23 @@
 import express from "express";
 import Joi from "joi";
-import { createCategory, getCategory, checkDuplicateNames, selectCatbyId, updateCat, getUpdatedCatbyId, selectImagePublicId, deleteCatbyId, checkDuplicateNameForUpdate } from "../controllers/categories.js";
 import { auth } from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js"
 import upload from "../middleware/upload.js";
 import { uploadToCloudinary } from "../lib/cloudinaryUpload.js";
 import cloudinary from "../lib/cloudinary.js";
 import arcjetProtect from "../middleware/arcjet.js";
+import {
+    createCategory, 
+    getCategory, 
+    checkDuplicateNames, 
+    selectCatbyId, 
+    updateCat, 
+    getUpdatedCatbyId, 
+    selectImagePublicId, 
+    deleteCatbyId, 
+    checkDuplicateNameForUpdate 
+} from "../controllers/categories.js";
+
 const router = express.Router();
 
 router.get("/", arcjetProtect, async (req, res) => {

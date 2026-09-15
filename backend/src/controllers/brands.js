@@ -87,4 +87,14 @@ async function checkDuplicateNameForUpdate(name, brandId) {
     return rows.length > 0;
 }
 
-export { getBrands, createBrand, selectBrandbyId, updateBrands, getUpdateBrandbyId, selectImagePublicId, deleteBrandbyId, checkDuplicateNames, checkDuplicateNameForUpdate };
+export { 
+    getBrands, 
+    createBrand, 
+    selectBrandbyId, 
+    updateBrands, 
+    getUpdateBrandbyId, 
+    selectImagePublicId, 
+    deleteBrandbyId, 
+    checkDuplicateNames, 
+    checkDuplicateNameForUpdate 
+};
