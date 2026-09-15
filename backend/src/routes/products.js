@@ -158,7 +158,7 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
 
     try {
 
-        const fieldsToUpdate = req.body;
+        const fieldsToUpdate = { ...req.body };
 
         let oldImagePublicId = null;
 

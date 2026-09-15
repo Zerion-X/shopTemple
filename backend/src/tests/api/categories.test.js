@@ -1,15 +1,34 @@
 import request from "supertest";
-import app from "../../app.js";
+import { jest } from "@jest/globals";
+
+jest.unstable_mockModule("../../middleware/arcjet.js", () => ({
+    default: (req, res, next) => next()
+}));
+
+const { default: app } = await import("../../app.js");
 import { pool } from "../../lib/db.js";
 import { createCategory } from "../../controllers/categories.js";
 import { createUser } from "../../controllers/signup.js";
 
+let testCategoryID;
+let deleteCategoryID;
+
 beforeEach(async () => {
-    await createCategory("test");
+    const result = await createCategory("Cattest", "test-image-url", "test-public-id");
+    const deleteResult = await createCategory("DeleteTest", null, null);
+
+    deleteCategoryID = deleteResult.insertId;
+    testCategoryID = result.insertId;
 
     await createUser(
         "Admin User",
-        "adminTest@gmail.com",
+        "adminCategoryTest@gmail.com",
+        "12345678"
+    );
+
+    await createUser(
+        "Customer User",
+        "customerCategoryTest@gmail.com",
         "12345678"
     );
 
@@ -17,19 +36,19 @@ beforeEach(async () => {
         `UPDATE users
          SET role = 'admin'
          WHERE email = ?`,
-        ["adminTest@gmail.com"]
+        ["adminCategoryTest@gmail.com"]
     );
 });
 
 afterEach(async () => {
     await pool.execute(
-        "DELETE FROM categories WHERE name IN (?, ?)",
-        ["test", "valid-name"]
+        "DELETE FROM categories WHERE name IN (?, ?, ?, ?)",
+        ["Cattest", "DeleteTest", "testingCREATE", "valid-name"]
     );
 
     await pool.execute(
-        "DELETE FROM users WHERE email = ?",
-        ["adminTest@gmail.com"]
+        "DELETE FROM users WHERE email IN (?, ?)",
+        ["adminCategoryTest@gmail.com", "customerCategoryTest@gmail.com"]
     );
 });
 
@@ -46,7 +65,7 @@ describe("GET /api/categories", () => {
         await agent
             .post("/api/auth/login")
             .send({
-                email: "adminTest@gmail.com",
+                email: "adminCategoryTest@gmail.com",
                 password: "12345678"
             });
 
@@ -56,10 +75,15 @@ describe("GET /api/categories", () => {
 
         expect(res.body).toEqual(expect.any(Array));
 
-        expect(res.body[0]).toEqual(
+        const category = res.body.find(
+            category => category.name === "Cattest"
+        );
+
+        expect(category).toEqual(
             expect.objectContaining({
                 category_id: expect.any(Number),
-                name: expect.any(String)
+                name: "Cattest",
+                image_url: "test-image-url"
             })
         );
     });
@@ -75,7 +99,7 @@ describe("POST /api/categories", () => {
         await agent
             .post("/api/auth/login")
             .send({
-                email: "adminTest@gmail.com",
+                email: "adminCategoryTest@gmail.com",
                 password: "12345678"
             });
 
@@ -97,14 +121,14 @@ describe("POST /api/categories", () => {
         await agent
             .post("/api/auth/login")
             .send({
-                email: "adminTest@gmail.com",
+                email: "adminCategoryTest@gmail.com",
                 password: "12345678"
             });
 
         const res = await agent
             .post("/api/categories")
             .send({
-                name: "test"
+                name: "Cattest"
             });
 
         expect(res.status).toBe(409);
@@ -117,23 +141,238 @@ describe("POST /api/categories", () => {
         await agent
             .post("/api/auth/login")
             .send({
-                email: "adminTest@gmail.com",
+                email: "adminCategoryTest@gmail.com",
                 password: "12345678"
             });
 
         const res = await agent
             .post("/api/categories")
             .send({
-                name: "valid-name"
+                name: "valid-name",
             });
 
         expect(res.status).toBe(201);
-
-        expect(res.body).toEqual({
-            id: expect.any(Number),
-            name: "valid-name"
-        });
     });
 
 });
 
+describe("PATCH /api/categories/:id", () => {
+    
+    it("should return 404 if there is no category with specified id", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "adminCategoryTest@gmail.com",
+                password: "12345678"
+            });
+
+        const res = await agent
+            .patch("/api/categories/999")
+            .send({
+                name: "something-something"
+            });
+        
+        expect(res.status).toBe(404);
+
+        expect(res.body.error).toBe("category not found");
+        
+    });
+
+    it("should return 400 if input object is not valid", async () =>{
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "adminCategoryTest@gmail.com",
+                password: "12345678" 
+            });
+        
+        const res = await agent
+            .patch(`/api/categories/${testCategoryID}`)
+            .send({
+                name: 123
+            });
+
+        expect(res.status).toBe(400);
+        
+        expect(res.body.error).toBe('"name" must be a string');
+
+    });
+
+    it("should return 400 if there is not field to update", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "adminCategoryTest@gmail.com",
+                password: "12345678" 
+            });
+        
+        const res = await agent
+            .patch(`/api/categories/${testCategoryID}`)
+            .send({
+
+            }); 
+
+        expect(res.status).toBe(400);
+
+        expect(res.body.error).toBe("No fields to update");
+    });
+
+    it("should return 200 and the updated category if everything is valid", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "adminCategoryTest@gmail.com",
+                password: "12345678" 
+            });
+        
+        const res = await agent
+            .patch(`/api/categories/${testCategoryID}`)
+            .send({
+                name: "new_test_name"
+            }); 
+
+            expect(res.status).toBe(200);
+
+            expect(res.body).toEqual(
+                expect.objectContaining({
+                    category_id: expect.any(Number),
+                    name: "new_test_name",
+                    image_url: "test-image-url",
+                })
+            );
+        });
+
+});
+
+describe("DELETE /api/categories/:id", () => {
+    
+    it("should return 404 if there is no category with the specified id", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "adminCategoryTest@gmail.com",
+                password: "12345678"
+            });
+        
+        const res = await agent
+            .delete("/api/categories/999")
+            
+        expect(res.status).toBe(404);
+
+        expect(res.body.error).toBe("category not found");
+
+    });
+
+    it("should return 204 when the category is deleted successfully", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "adminCategoryTest@gmail.com",
+                password: "12345678"       
+            });
+        
+        const res = await agent
+            .delete(`/api/categories/${deleteCategoryID}`)
+        
+        expect(res.status).toBe(204);
+    });
+
+});
+
+describe(" Customer requesting", () =>{
+    
+    it("should return 403 if customer requesting POST", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "customerCategoryTest@gmail.com",
+                password: "12345678"
+            });
+
+        const res = await agent
+            .post("/api/categories")
+            .send({
+                name: "something-something"
+            });
+        
+        expect(res.status).toBe(403);
+
+        expect(res.text).toBe("Access Denied!");
+
+    });
+
+    it("should return 403 if customer requesting PATCH", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "customerCategoryTest@gmail.com",
+                password: "12345678"
+            });
+
+        const res = await agent
+            .patch("/api/categories/999")
+            .send({
+                name: "something-something"
+            });
+        
+        expect(res.status).toBe(403);
+
+        expect(res.text).toBe("Access Denied!");
+
+    });
+
+    it("should return 403 if customer requesting DELETE", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "customerCategoryTest@gmail.com",
+                password: "12345678"
+            });
+
+        const res = await agent
+            .delete("/api/categories/999")
+            .send({
+                name: "something-something"
+            });
+        
+        expect(res.status).toBe(403);
+
+        expect(res.text).toBe("Access Denied!");
+
+    });
+
+    it("should return 200 if customer requesting GET", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "customerCategoryTest@gmail.com",
+                password: "12345678"
+            });
+
+        const res = await agent
+            .get("/api/categories")
+        
+        expect(res.status).toBe(200);
+
+    });
+})

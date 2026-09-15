@@ -25,10 +25,29 @@ describe("Validating categories", () => {
         await pool.end();
     })
 
-    it("should return an id after creating a category", async () => {
-        const id = await createCategory("testingCREATE");
+    it("should create a category and return its insertId", async () => {
+        const res = await createCategory(
+            "testingCREATE",
+            "test-image-url",
+            "test-public-id"
+        );
 
-        expect(id).toEqual(expect.any(Number));
+        const [rows] = await pool.execute(
+            `SELECT category_id, image_url, image_public_id
+            FROM categories
+            WHERE name = ?`,
+            ["testingCREATE"]
+        );
+
+        expect(rows[0]).toEqual(
+            expect.objectContaining({
+                category_id: expect.any(Number),
+                image_url: "test-image-url",
+                image_public_id: "test-public-id"
+            })
+        );
+
+        expect(res.insertId).toEqual(expect.any(Number));
     });
 
     it("should return categories", async () => {

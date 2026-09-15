@@ -151,6 +151,11 @@ describe("SignupUser", () => {
        expect(rows[0].password).not.toBe(testUser.password);
     
        expect(rows[0].password).toMatch(/^\$2[aby]\$/);
+
+       expect(await bcrypt.compare(
+            testUser.password,
+            rows[0].password
+        )).toBe(true);
     });
 
 });

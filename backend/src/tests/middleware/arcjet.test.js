@@ -141,6 +141,10 @@ describe("Arcjet middleware", () => {
 
 
     it("should call next if Arcjet throws an error", async () => {
+        const consoleError = jest
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        
         protect.mockRejectedValue(new Error("Arcjet error"));
 
         const req = {};
@@ -150,6 +154,8 @@ describe("Arcjet middleware", () => {
         await arcjetProtect(req, res, next);
 
         expect(next).toHaveBeenCalled();
+
+        consoleError.mockRestore();
     });
 
 });

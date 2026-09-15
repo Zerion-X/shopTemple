@@ -83,9 +83,73 @@ describe("auth middleware", () => {
         expect(req.user.user_id).toBe(user.user_id);
 
         expect(req.user.email).toBe(testUser.email);
+
     });
 
-    it("should return 401 when no token is provided", async () => {
+    it("should return 401 if the token is valid but the user no longer exists in DB", async () => {        
+        const hashedPassword = await bcrypt.hash(
+            "onetimeuser",
+            10
+        );
+
+        await pool.execute(
+            `INSERT INTO users (full_name, email, password)
+             VALUES (?, ?, ?)`,
+            [
+                "one-time-user",
+                "oneTimeUser@gmail.com",
+                hashedPassword
+            ]
+        );
+        
+        const [users] = await pool.execute(
+            `SELECT user_id, role
+             FROM users
+             WHERE email = ?
+             LIMIT 1`,
+            ["oneTimeUser@gmail.com"]
+        );
+
+        const user = users[0];
+
+        const token = jwt.sign(
+            {
+                user_id: user.user_id,
+                role: user.role
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+
+        await pool.execute(
+            `DELETE FROM users WHERE email = ?`,
+            ["oneTimeUser@gmail.com"]
+        );
+
+        const req = {
+            cookies: {
+                jwt: token
+            }
+        };
+
+        const res = {
+            status: jest.fn().mockReturnThis(),
+            send: jest.fn()
+        };
+
+        const next = jest.fn();
+
+        await auth(req, res, next);
+
+        expect(next).not.toHaveBeenCalled();
+        
+        expect(req.user).toBeUndefined();
+
+        expect(res.status).toHaveBeenCalledWith(401);
+
+    });
+
+    it("should return 401 when no token is provided", async () => {        
         const req = {
             cookies: {}
         };
@@ -104,9 +168,14 @@ describe("auth middleware", () => {
         expect(res.send).toHaveBeenCalledWith("Access denied. No token provided.");
         
         expect(next).not.toHaveBeenCalled();
+
     });
 
     it("should return 400 when the token is invalid", async () => {
+        const consoleError = jest
+            .spyOn(console, "error")
+            .mockImplementation(() => {});
+        
         const req = {
             cookies: {
                 jwt: "not-a-valid-jwt"
@@ -127,9 +196,11 @@ describe("auth middleware", () => {
         expect(res.send).toHaveBeenCalledWith("Invalid token");
         
         expect(next).not.toHaveBeenCalled();
+
+        consoleError.mockRestore();
     });
 
-    it("should return 401 when the user does not exist", async () => {
+    it("should return 401 when the user does not exist", async () => {        
         const token = jwt.sign(
             {
                 user_id: 999999,
@@ -159,9 +230,10 @@ describe("auth middleware", () => {
         expect(res.send).toHaveBeenCalledWith("Access denied. User not found.");
         
         expect(next).not.toHaveBeenCalled();
+
     });
 
-    it("should skip authentication when REQUIRE_AUTH is false", async () => {
+    it("should skip authentication when REQUIRE_AUTH is false", async () => {        
         process.env.REQUIRE_AUTH = "false";
 
         const req = {
@@ -182,6 +254,7 @@ describe("auth middleware", () => {
         expect(res.status).not.toHaveBeenCalled();
         
         expect(next).toHaveBeenCalled();
+
     });
 
 });

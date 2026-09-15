@@ -18,6 +18,12 @@ describe("admin middleware", () => {
     };
 
     beforeEach(async () => {
+        await pool.execute(
+            `DELETE FROM users
+             WHERE email IN (?, ?)`,
+             [customerUser.email, adminUser.email]
+        );
+        
         const hashedCustomerPassword = await bcrypt.hash(
             customerUser.password,
             10
@@ -60,7 +66,7 @@ describe("admin middleware", () => {
 
         await pool.execute(
             `DELETE FROM users WHERE email = ?`,
-            [adminUser.email]
+            ["adminTest@gmail.com"]
         );
     });
 
