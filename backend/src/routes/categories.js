@@ -1,6 +1,6 @@
 import express from "express";
 import Joi from "joi";
-import { createCategory, getCategory, checkDuplicateNames, selectCatbyId, updateCat, getUpdatedCatbyId, selectImagePublicId, deleteCatbyId } from "../controllers/categories.js";
+import { createCategory, getCategory, checkDuplicateNames, selectCatbyId, updateCat, getUpdatedCatbyId, selectImagePublicId, deleteCatbyId, checkDuplicateNameForUpdate } from "../controllers/categories.js";
 import { auth } from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js"
 import upload from "../middleware/upload.js";
@@ -66,6 +66,10 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
     const fieldsToUpdate = {};
 
     if (req.body.name !== undefined) {
+        if (await checkDuplicateNameForUpdate(req.body.name, categoryId)) {
+            return res.status(409).json({ error: "Such name already exists" });
+        }
+    
         fieldsToUpdate.name = req.body.name;
     }
 

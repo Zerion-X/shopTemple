@@ -1,4 +1,4 @@
-import { createCategory, getCategory, checkDuplicateNames } from "../../controllers/categories";
+import { createCategory, getCategory, checkDuplicateNames, checkDuplicateNameForUpdate } from "../../controllers/categories";
 import { pool } from "../../lib/db";
 
 describe("Validating categories", () => {
@@ -12,12 +12,19 @@ describe("Validating categories", () => {
             VALUES (?)`,
             [testCat.name]
         );
+
+        const [rows] = await pool.execute(
+            `SELECT category_id FROM categories WHERE name = ?`,
+            [testCat.name]
+        );
+
+        const testCatId = rows[0].category_id;
     });
 
     afterEach(async () => {
         await pool.execute(
-            `DELETE FROM categories WHERE name = ?`,
-            [testCat.name]
+            `DELETE FROM categories WHERE name IN (?, ?)`,
+            [testCat.name, "something"]
         );
     });
 
@@ -66,6 +73,31 @@ describe("Validating categories", () => {
         const res = await checkDuplicateNames("test");
 
         expect(res).toBe(true);
+    });
+
+    it("should return true if the category name with different category_id already exists", async () => {
+        await pool.execute(
+            `INSERT INTO categories (name)
+            VALUES (?)`,
+            ["something"]
+        );
+
+        const [rows] = await pool.execute(
+            `SELECT category_id FROM categories WHERE name = ?`,
+            ["something"]
+        );
+
+        const testCat2Id = rows[0].category_id;
+        
+        const res = await checkDuplicateNameForUpdate("test", testCat2Id);
+
+        expect(res).toBe(true);
+    });
+
+    it("should return false if the category get updated but keep it`s name", async () => {
+        const res = await checkDuplicateNameForUpdate("test", testCatId);
+
+        expect(res).toBe(false);
     });
 
     it("should return false if the category name does not exist", async () => {

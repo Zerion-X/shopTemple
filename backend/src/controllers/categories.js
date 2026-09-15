@@ -77,4 +77,16 @@ async function deleteCatbyId (categoryId) {
     );
 }
 
-export { createCategory, getCategory, checkDuplicateNames, selectCatbyId, updateCat, getUpdatedCatbyId, selectImagePublicId, deleteCatbyId };
+async function checkDuplicateNameForUpdate(name, categoryId) {
+    const [rows] = await pool.execute(
+        `SELECT category_id
+         FROM categories
+         WHERE name = ? AND category_id != ?
+         LIMIT 1`,
+        [name, categoryId]
+    );
+
+    return rows.length > 0;
+}
+
+export { createCategory, getCategory, checkDuplicateNames, selectCatbyId, updateCat, getUpdatedCatbyId, selectImagePublicId, deleteCatbyId, checkDuplicateNameForUpdate };
