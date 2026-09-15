@@ -7,27 +7,37 @@ import {
   Heading,
   Separator,
   Avatar,
-  Spinner,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../hooks/useUser";
+import { useQueryClient } from "@tanstack/react-query";
+import { logout } from "../services/authService";
 
-const ProfilePage = () => {
+const CustomerPage = () => {
   const navigate = useNavigate();
+  const { data: user } = useUser();
+  const queryClient = useQueryClient();
 
-  //   const { data: user, isPending, error } = useUser();
+  const handleLogout = async () => {
+    try {
+      await logout();
 
-  //   if (isPending)
-  //     return <Spinner margin="auto" display="block" marginTop={10} />;
-  //   if (error) return <Text color="red.500">Failed to load profile.</Text>;
+      queryClient.setQueryData(["profile"], null);
+
+      navigate("/");
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
 
   return (
     <Box maxWidth="500px" margin="auto" padding={6}>
       <VStack gap={2} marginBottom={6}>
         <Avatar.Root size="2xl" colorPalette="cyan">
-          <Avatar.Fallback name="test" />
+          <Avatar.Fallback name={user?.full_name} />
         </Avatar.Root>
-        <Heading size="lg">"tset"</Heading>
+
+        <Heading size="lg">{user?.full_name}</Heading>
       </VStack>
 
       <VStack align="stretch" gap={4}>
@@ -35,13 +45,15 @@ const ProfilePage = () => {
           <Text fontSize="sm" color="gray.500">
             Email
           </Text>
-          <Text fontSize="md">"test"</Text>
+
+          <Text fontSize="md">{user?.email}</Text>
         </Box>
 
         <Box>
           <Text fontSize="sm" color="gray.500">
             Address
           </Text>
+
           <Text fontSize="md">123 Main St, Baku, Azerbaijan</Text>
         </Box>
 
@@ -51,6 +63,7 @@ const ProfilePage = () => {
           <Button flex="1" onClick={() => navigate("/wishlist")}>
             Wishlists
           </Button>
+
           <Button
             flex="1"
             variant="outline"
@@ -61,8 +74,16 @@ const ProfilePage = () => {
           </Button>
         </HStack>
       </VStack>
+      <Button
+        variant="outline"
+        colorPalette="red"
+        onClick={handleLogout}
+        marginY={5}
+      >
+        Log out
+      </Button>
     </Box>
   );
 };
 
-export default ProfilePage;
+export default CustomerPage;
