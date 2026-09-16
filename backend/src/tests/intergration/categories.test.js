@@ -25,8 +25,13 @@ describe("Validating categories", () => {
 
     afterEach(async () => {
         await pool.execute(
-            `DELETE FROM categories WHERE name IN (?, ?)`,
-            [testCat.name, "something"]
+            `DELETE FROM categories
+            WHERE name IN (?, ?, ?)`,
+            [
+                "test",
+                "something",
+                "testingCREATE"
+            ]
         );
     });
 
