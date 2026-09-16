@@ -1,13 +1,3 @@
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Button,
-  Heading,
-  Separator,
-  Avatar,
-} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
@@ -31,58 +21,144 @@ const CustomerPage = () => {
   };
 
   return (
-    <Box maxWidth="500px" margin="auto" padding={6}>
-      <VStack gap={2} marginBottom={6}>
-        <Avatar.Root size="2xl" colorPalette="cyan">
-          <Avatar.Fallback name={user?.full_name} />
-        </Avatar.Root>
+    <div className="min-h-[calc(100vh-76px)] bg-[#FFF4F5] px-5 py-10 md:px-8 md:py-14">
+      <div className="mx-auto max-w-[1100px]">
+        {/* Page heading */}
+        <div className="mb-10">
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.25em] text-[#C93663]">
+            My Account
+          </p>
 
-        <Heading size="lg">{user?.full_name}</Heading>
-      </VStack>
+          <h1 className="font-serif text-4xl tracking-wide text-[#79163F] md:text-5xl">
+            Welcome, {user?.full_name?.split(" ")[0]}
+          </h1>
+        </div>
 
-      <VStack align="stretch" gap={4}>
-        <Box>
-          <Text fontSize="sm" color="gray.500">
-            Email
-          </Text>
+        {/* Main profile area */}
+        <div className="grid gap-6 md:grid-cols-[0.85fr_1.5fr]">
+          {/* Profile card */}
+          <section className="flex flex-col items-center justify-center rounded-3xl border border-[#F5BFC9] bg-[#FFFCFC] px-6 py-10 text-center shadow-sm">
+            {/* Avatar */}
+            <div className="mb-6 flex size-28 items-center justify-center rounded-full bg-[#C93663] font-serif text-4xl text-white shadow-sm ring-8 ring-[#FCE1E5]">
+              {user?.full_name?.charAt(0).toUpperCase() || "U"}
+            </div>
 
-          <Text fontSize="md">{user?.email}</Text>
-        </Box>
+            <h2 className="font-serif text-2xl text-[#79163F]">
+              {user?.full_name}
+            </h2>
 
-        <Box>
-          <Text fontSize="sm" color="gray.500">
-            Address
-          </Text>
+            <p className="mt-2 text-sm text-[#A85A70]">
+              ShopTemple customer
+            </p>
 
-          <Text fontSize="md">123 Main St, Baku, Azerbaijan</Text>
-        </Box>
+            <div className="mt-8 h-px w-16 bg-[#F5BFC9]" />
 
-        <Separator marginY={4} />
+            <p className="mt-6 text-xs uppercase tracking-[0.18em] text-[#B58A97]">
+              Member
+            </p>
+          </section>
 
-        <HStack gap={4}>
-          <Button flex="1" onClick={() => navigate("/wishlist")}>
-            Wishlists
-          </Button>
+          {/* Account information */}
+          <section className="rounded-3xl border border-[#F5BFC9] bg-[#FFFCFC] p-6 shadow-sm md:p-8">
+            <div className="mb-7">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#C93663]">
+                Personal Information
+              </p>
 
-          <Button
-            flex="1"
-            variant="outline"
-            borderWidth="2px"
-            onClick={() => navigate("/orders")}
+              <h2 className="mt-1 font-serif text-2xl text-[#79163F]">
+                Account details
+              </h2>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2">
+              {/* Email */}
+              <div className="rounded-2xl bg-[#FFF4F5] p-5">
+                <p className="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-[#A85A70]">
+                  Email
+                </p>
+
+                <p className="break-all text-sm text-[#79163F]">
+                  {user?.email}
+                </p>
+              </div>
+
+              {/* Address */}
+              <div className="rounded-2xl bg-[#FFF4F5] p-5">
+                <p className="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-[#A85A70]">
+                  Address
+                </p>
+
+                <p className="text-sm text-[#79163F]">
+                  123 Main St, Baku, Azerbaijan
+                </p>
+              </div>
+            </div>
+
+            {/* Account actions */}
+            <div className="mt-8 border-t border-[#F5E1E5] pt-7">
+              <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#A85A70]">
+                Your ShopTemple
+              </p>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {/* Wishlist */}
+                <button
+                  type="button"
+                  onClick={() => navigate("/wishlist")}
+                  className="group flex items-center justify-between rounded-2xl border border-[#F5BFC9] bg-[#FFFCFC] px-5 py-4 text-left transition-all duration-300 hover:border-[#E96886] hover:bg-[#FCE1E5]"
+                >
+                  <div>
+                    <p className="font-medium text-[#79163F]">
+                      Wishlist
+                    </p>
+
+                    <p className="mt-1 text-xs text-[#A85A70]">
+                      View your saved items
+                    </p>
+                  </div>
+
+                  <span className="text-xl text-[#C93663] transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
+                </button>
+
+                {/* Orders */}
+                <button
+                  type="button"
+                  onClick={() => navigate("/orders")}
+                  className="group flex items-center justify-between rounded-2xl border border-[#F5BFC9] bg-[#FFFCFC] px-5 py-4 text-left transition-all duration-300 hover:border-[#E96886] hover:bg-[#FCE1E5]"
+                >
+                  <div>
+                    <p className="font-medium text-[#79163F]">
+                      Orders
+                    </p>
+
+                    <p className="mt-1 text-xs text-[#A85A70]">
+                      View your order history
+                    </p>
+                  </div>
+
+                  <span className="text-xl text-[#C93663] transition-transform duration-300 group-hover:translate-x-1">
+                    →
+                  </span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* Logout */}
+        <div className="mt-8 flex justify-end">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-full border border-[#E7A9B7] px-6 py-2.5 text-sm font-medium text-[#C93663] transition-all duration-300 hover:border-[#C93663] hover:bg-[#FCE1E5]"
           >
-            Orders
-          </Button>
-        </HStack>
-      </VStack>
-      <Button
-        variant="outline"
-        colorPalette="red"
-        onClick={handleLogout}
-        marginY={5}
-      >
-        Log out
-      </Button>
-    </Box>
+            Log out
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

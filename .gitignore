@@ -4,3 +4,5 @@ node_modules/
 backend/logfile.log
 backend/uncaughtExceptions.log
 backend/.env.test
+frontend/tree_struct.txt
+frontend/pj.txt

@@ -1,12 +1,3 @@
-import {
-  Box,
-  VStack,
-  Text,
-  Button,
-  Heading,
-  Separator,
-  Avatar,
-} from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useUser from "../hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,73 +21,80 @@ const AdminPage = () => {
   };
 
   return (
-    <Box maxWidth="900px" margin="auto" padding={6}>
-      <VStack align="stretch" gap={4}>
-        <VStack>
-          <Avatar.Root size="2xl" colorPalette="cyan">
-            <Avatar.Fallback name={user?.full_name} />
-          </Avatar.Root>
+    <div className="mx-auto max-w-[900px] p-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex size-32 items-center justify-center overflow-hidden rounded-full bg-cyan-500 text-4xl font-semibold text-white">
+            {user?.full_name?.charAt(0).toUpperCase() || "A"}
+          </div>
 
-          <Heading size="lg">Admin Dashboard</Heading>
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
 
-          <Text color="gray.500">{user?.full_name}</Text>
-        </VStack>
+          <p className="text-gray-500">{user?.full_name}</p>
+        </div>
 
-        <Separator marginY={4} />
+        <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
 
-        <Heading size="md">Dashboard</Heading>
+        <h2 className="text-xl font-semibold">Dashboard</h2>
 
-        <Box borderWidth="1px" borderRadius="lg" padding={5}>
-          <Text fontSize="sm" color="gray.500">
-            Sales
-          </Text>
+        <div className="rounded-lg border border-gray-200 p-5 dark:border-gray-700">
+          <p className="text-sm text-gray-500">Sales</p>
+          <h3 className="text-2xl font-bold">$0</h3>
+        </div>
 
-          <Heading size="lg">$0</Heading>
-        </Box>
+        <div className="rounded-lg border border-gray-200 p-5 dark:border-gray-700">
+          <p className="text-sm text-gray-500">Orders</p>
+          <h3 className="text-2xl font-bold">0</h3>
+        </div>
 
-        <Box borderWidth="1px" borderRadius="lg" padding={5}>
-          <Text fontSize="sm" color="gray.500">
-            Orders
-          </Text>
+        <div className="rounded-lg border border-gray-200 p-5 dark:border-gray-700">
+          <p className="text-sm text-gray-500">Customers</p>
+          <h3 className="text-2xl font-bold">0</h3>
+        </div>
 
-          <Heading size="lg">0</Heading>
-        </Box>
+        <div className="my-4 border-t border-gray-200 dark:border-gray-700" />
 
-        <Box borderWidth="1px" borderRadius="lg" padding={5}>
-          <Text fontSize="sm" color="gray.500">
-            Customers
-          </Text>
-
-          <Heading size="lg">0</Heading>
-        </Box>
-
-        <Separator marginY={4} />
-
-        <Button size="lg" onClick={() => navigate("/admin/products")}>
+        <button
+          type="button"
+          onClick={() => navigate("/admin/products")}
+          className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
+        >
           Product Management
-        </Button>
+        </button>
 
-        <Button size="lg" onClick={() => navigate("/admin/orders")}>
+        <button
+          type="button"
+          onClick={() => navigate("/admin/orders")}
+          className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
+        >
           Orders Management
-        </Button>
+        </button>
 
-        <Button size="lg" onClick={() => navigate("/admin/users")}>
+        <button
+          type="button"
+          onClick={() => navigate("/admin/users")}
+          className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
+        >
           Users Management
-        </Button>
+        </button>
 
-        <Button size="lg" onClick={() => navigate("/admin/categories")}>
+        <button
+          type="button"
+          onClick={() => navigate("/admin/categories")}
+          className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
+        >
           Categories Management
-        </Button>
-      </VStack>
-      <Button
-        variant="outline"
-        colorPalette="red"
+        </button>
+      </div>
+
+      <button
+        type="button"
         onClick={handleLogout}
-        marginY={5}
+        className="my-5 rounded-md border border-red-500 px-4 py-2 font-medium text-red-500 transition-colors hover:bg-red-500 hover:text-white"
       >
         Log out
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 };
 

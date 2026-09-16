@@ -1,17 +1,4 @@
 import { useState } from "react";
-import {
-  Box,
-  VStack,
-  HStack,
-  Heading,
-  Text,
-  Button,
-  Input,
-  Field,
-  Card,
-  Separator,
-  Spinner,
-} from "@chakra-ui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { create } from "../services/categoriesService";
 import useCategories from "../hooks/useCategories";
@@ -40,73 +27,82 @@ const CategoryManagementPage = () => {
       setError("Category name is required.");
       return;
     }
+
     mutate({ name: name.trim() });
   };
 
   return (
-    <Box maxWidth="700px" margin="auto" padding={6}>
-      <VStack align="stretch" gap={4}>
-        <Heading size="lg">Categories Management</Heading>
+    <div className="mx-auto max-w-[700px] p-6">
+      <div className="flex flex-col gap-4">
+        <h1 className="text-2xl font-bold">Categories Management</h1>
 
-        <Separator marginY={2} />
+        <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
 
-        <Card.Root padding={5}>
-          <Card.Body>
-            <VStack align="stretch" gap={4}>
-              <Field.Root invalid={!!error}>
-                <Field.Label>Category name</Field.Label>
-                <Input
-                  placeholder="e.g. Skincare"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSubmit();
-                  }}
-                />
-                {error && <Field.ErrorText>{error}</Field.ErrorText>}
-              </Field.Root>
+        <div className="rounded-lg border border-gray-200 p-5 dark:border-gray-700">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="category-name" className="text-sm font-medium">
+                Category name
+              </label>
 
-              <Button
-                alignSelf="flex-start"
-                onClick={handleSubmit}
-                loading={isPending}
-              >
-                Add Category
-              </Button>
-            </VStack>
-          </Card.Body>
-        </Card.Root>
+              <input
+                id="category-name"
+                type="text"
+                placeholder="e.g. Skincare"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSubmit();
+                }}
+                className={`rounded-md border bg-transparent px-3 py-2 outline-none ${
+                  error
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-gray-300 focus:border-cyan-500 dark:border-gray-600"
+                }`}
+              />
 
-        <Separator marginY={2} />
+              {error && <p className="text-sm text-red-500">{error}</p>}
+            </div>
 
-        <Heading size="md">All Categories</Heading>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={isPending}
+              className="self-start rounded-md border border-gray-300 px-4 py-2 font-medium transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            >
+              {isPending ? "Adding..." : "Add Category"}
+            </button>
+          </div>
+        </div>
+
+        <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
+
+        <h2 className="text-xl font-semibold">All Categories</h2>
 
         {isFetching && (
-          <HStack justify="center" paddingY={8}>
-            <Spinner />
-          </HStack>
+          <div className="flex justify-center py-8">
+            <div className="size-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-white" />
+          </div>
         )}
 
-        {isError && <Text color="red.500">Failed to load categories.</Text>}
+        {isError && <p className="text-red-500">Failed to load categories.</p>}
 
         {!isFetching && !isError && categories?.length === 0 && (
-          <Text color="gray.500">No categories yet.</Text>
+          <p className="text-gray-500">No categories yet.</p>
         )}
 
-        <VStack align="stretch" gap={3}>
+        <div className="flex flex-col gap-3">
           {categories?.map((category) => (
-            <Box
+            <div
               key={category.category_id}
-              borderWidth="1px"
-              borderRadius="lg"
-              padding={4}
+              className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             >
-              <Text fontWeight="medium">{category.name}</Text>
-            </Box>
+              <p className="font-medium">{category.name}</p>
+            </div>
           ))}
-        </VStack>
-      </VStack>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
 
