@@ -2,6 +2,8 @@ import { createCategory, getCategory, checkDuplicateNames, checkDuplicateNameFor
 import { pool } from "../../lib/db";
 
 describe("Validating categories", () => {
+    let testCatId;
+    
     const testCat = {
         name: "test"
     };
@@ -18,7 +20,7 @@ describe("Validating categories", () => {
             [testCat.name]
         );
 
-        const testCatId = rows[0].category_id;
+        testCatId = rows[0].category_id;
     });
 
     afterEach(async () => {

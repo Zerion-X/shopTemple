@@ -42,13 +42,24 @@ beforeEach(async () => {
 
 afterEach(async () => {
     await pool.execute(
-        "DELETE FROM categories WHERE name IN (?, ?, ?, ?)",
-        ["Cattest", "DeleteTest", "testingCREATE", "valid-name"]
+        `DELETE FROM categories
+         WHERE name IN (?, ?, ?, ?, ?)`,
+        [
+            "Cattest",
+            "DeleteTest",
+            "testingCREATE",
+            "valid-name",
+            "new_test_name"
+        ]
     );
 
     await pool.execute(
-        "DELETE FROM users WHERE email IN (?, ?)",
-        ["adminCategoryTest@gmail.com", "customerCategoryTest@gmail.com"]
+        `DELETE FROM users
+         WHERE email IN (?, ?)`,
+        [
+            "adminCategoryTest@gmail.com",
+            "customerCategoryTest@gmail.com"
+        ]
     );
 });
 

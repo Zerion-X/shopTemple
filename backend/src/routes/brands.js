@@ -160,3 +160,4 @@ function validateUpdate(req) {
 }
 
 export default router;
+export { validate };
