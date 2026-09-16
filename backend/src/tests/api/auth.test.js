@@ -1,8 +1,15 @@
-// CREATE DATABASE shoptemple_test;
-// CREATE TABLE shoptemple_test.users LIKE shoptemple.users;
 import request from "supertest";
-import app from "../../app.js";
-import random from 'string-random';
+import { jest } from "@jest/globals";
+
+jest.unstable_mockModule("../../middleware/arcjet.js", () => ({
+    default: (req, res, next) => next()
+}));
+
+jest.unstable_mockModule("../../emails/emailHandlers.js", () => ({
+    default: jest.fn().mockResolvedValue(undefined)
+}));
+
+const { default: app } = await import("../../app.js");
 import { createUser } from "../../controllers/signup.js";
 import { pool } from "../../lib/db.js";
 

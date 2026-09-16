@@ -1,192 +1,143 @@
-import express from "express"
-import Joi from "joi"
+import express from "express";
+import Joi from "joi";
 import { auth } from "../middleware/auth.js";
 import isAdmin from "../middleware/admin.js"
-import arcjetProtect from "../middleware/arcjet.js";
 import upload from "../middleware/upload.js";
-import { uploadToCloudinary } from "../lib/cloudinaryUpload.js"
-import cloudinary from "../lib/cloudinary.js"
-import { pool } from "../lib/db.js";
+import { uploadToCloudinary } from "../lib/cloudinaryUpload.js";
+import cloudinary from "../lib/cloudinary.js";
+import arcjetProtect from "../middleware/arcjet.js";
+import {
+    createCategory, 
+    getCategory, 
+    checkDuplicateNames, 
+    selectCatbyId, 
+    updateCat, 
+    getUpdatedCatbyId, 
+    selectImagePublicId, 
+    deleteCatbyId, 
+    checkDuplicateNameForUpdate 
+} from "../controllers/categories.js";
+
 const router = express.Router();
 
-
 router.get("/", arcjetProtect, async (req, res) => {
-    try {
-        const [categories] = await pool.execute("SELECT category_id, name, image_url FROM categories");
-        res.json(categories);
-    } catch (error) {
-        console.error("Error fetching categories:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
+    
+    const categories = await getCategory();
+    
+    res.json(categories);
 });
 
 router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (req, res) => {
     const { error } = validate(req.body);
+
     if (error) return res.status(400).send(error.details[0].message);
+
     const { name } = req.body;
 
-    try {
-        let imageUrl = null;
-        let imagePublicId = null;
+    if (await checkDuplicateNames(name)) return res.status(409).send("Such name already exists");
 
-        if (req.file) {
+    let imageUrl = null;
+    let imagePublicId = null;
 
-            const result = await uploadToCloudinary(
-                req.file.buffer,
-                "shop-temple/categories"
-            );
+    if (req.file) {
 
-            imageUrl = result.secure_url;
-            imagePublicId = result.public_id;
-        }
-
-        const [result] = await pool.execute(
-            "INSERT INTO categories (name, image_url, image_public_id) VALUES (?, ?, ?)",
-            [name, imageUrl, imagePublicId]
+        const result = await uploadToCloudinary(
+            req.file.buffer,
+            "shop-temple/categories"
         );
-        
-        const categoryId = result.insertId;
-        const [rows] = await pool.execute(
-            "SELECT * FROM categories WHERE category_id = ?",
-            [categoryId]
-        );
-        res.status(201).json(rows[0]);
-    } catch (error) {
-        console.error("Error creating category:", error);
-        res.status(500).json({ error: "Internal server error" });
+
+        imageUrl = result.secure_url;
+        imagePublicId = result.public_id;
     }
+
+    const result = await createCategory(name, imageUrl, imagePublicId);
+        
+    const categoryId = result.insertId;
+    const rows = await selectCatbyId(categoryId);
+    
+    res.status(201).json(rows[0]);
 });
 
 router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async (req, res) => {
     const categoryId = req.params.id;
 
-    try {
-        const [rows] = await pool.execute(
-            "SELECT * FROM categories WHERE category_id = ?",
-            [categoryId]
-        );
+    const rows = await selectCatbyId(categoryId)
+        
+    if (rows.length === 0)  return res.status(404).json({ error: "category not found" });
+        
+    const category = rows[0];
 
-        if (rows.length === 0) {
-            return res.status(404).json({
-                error: "category not found"
-            });
-        }
+    if (Object.keys(req.body).length > 0) {
+        const { error } = validateUpdate(req.body);
 
-        const category = rows[0];
-
-        if (Object.keys(req.body).length > 0) {
-            const { error } = validateUpdate(req.body);
-
-            if (error) {
-                return res.status(400).json({
-                    error: error.details[0].message
-                });
-            }
-        }
-
-        const fieldsToUpdate = {};
-
-        if (req.body.name !== undefined) {
-            fieldsToUpdate.name = req.body.name;
-        }
-
-        let oldImagePublicId = null;
-
-        if (req.file) {
-            const result = await uploadToCloudinary(
-                req.file.buffer,
-                "shop-temple/categories"
-            );
-
-            fieldsToUpdate.image_url = result.secure_url;
-            fieldsToUpdate.image_public_id = result.public_id;
-
-            oldImagePublicId = category.image_public_id;
-        }
-
-        if (Object.keys(fieldsToUpdate).length === 0) {
-            return res.status(400).json({
-                error: "No fields to update"
-            });
-        }
-
-        const setClause = Object.keys(fieldsToUpdate)
-            .map(field => `${field} = ?`)
-            .join(", ");
-
-        const values = Object.values(fieldsToUpdate);
-        values.push(categoryId);
-
-        await pool.execute(
-            `UPDATE categories
-                SET ${setClause}
-                WHERE category_id = ?`,
-            values
-        );
-
-        if (oldImagePublicId) {
-            await cloudinary.uploader.destroy(oldImagePublicId);
-        }
-
-        const [updatedRows] = await pool.execute(
-            `SELECT
-                category_id,
-                name,
-                image_url
-                FROM categories
-                WHERE category_id = ?`,
-            [categoryId]
-        );
-
-        return res.json(updatedRows[0]);
-    } catch (error) {
-        console.error("Error updating category:", error);
-
-        return res.status(500).json({
-            error: "Internal server error"
-        });
+        if (error)  return res.status(400).json({ error: error.details[0].message });   
+    
     }
+
+    const fieldsToUpdate = {};
+
+    if (req.body.name !== undefined) {
+        if (await checkDuplicateNameForUpdate(req.body.name, categoryId)) {
+            return res.status(409).json({ error: "Such name already exists" });
+        }
+    
+        fieldsToUpdate.name = req.body.name;
+    }
+
+    let oldImagePublicId = null;
+
+    if (req.file) {
+        const result = await uploadToCloudinary(
+            req.file.buffer,
+            "shop-temple/categories"
+        );
+
+        fieldsToUpdate.image_url = result.secure_url;
+        fieldsToUpdate.image_public_id = result.public_id;
+
+        oldImagePublicId = category.image_public_id;
+    }
+
+    if (Object.keys(fieldsToUpdate).length === 0)   return res.status(400).json({ error: "No fields to update" });
+        
+
+    const setClause = Object.keys(fieldsToUpdate)
+        .map(field => `${field} = ?`)
+        .join(", ");
+
+    const values = Object.values(fieldsToUpdate);
+    values.push(categoryId);
+
+    await updateCat(setClause, values);
+
+    if (oldImagePublicId)   await cloudinary.uploader.destroy(oldImagePublicId);
+        
+
+    const updatedRows = await getUpdatedCatbyId(categoryId)
+    
+    return res.json(updatedRows[0]);
 });
 
 router.delete("/:id", arcjetProtect, auth, isAdmin, async (req, res) => {
 
     const categoryId = req.params.id;
 
-    try {
+    const rows = await selectImagePublicId(categoryId);
 
-        const [rows] = await pool.execute(
-            "SELECT image_public_id FROM categories WHERE category_id = ?",
-            [categoryId]
+    if (rows.length === 0)  return res.status(404).json({ error: "category not found" });
+        
+
+    const category = rows[0];
+
+    if (category.image_public_id) {
+        await cloudinary.uploader.destroy(
+            category.image_public_id
         );
-
-        if (rows.length === 0) {
-            return res.status(404).json({
-                error: "category not found"
-            });
-        }
-
-        const category = rows[0];
-
-        if (category.image_public_id) {
-            await cloudinary.uploader.destroy(
-                category.image_public_id
-            );
-        }
-
-        await pool.execute(
-            "DELETE FROM categories WHERE category_id = ?",
-            [categoryId]
-        );
-
-        return res.status(204).send();
-
-    } catch (error) {
-        console.error("Error deleting category:", error);
-
-        return res.status(500).json({
-            error: "Internal server error"
-        });
     }
+
+    await deleteCatbyId(categoryId);
+
+    return res.status(204).send();
 });
 
 function validate(req) {
@@ -208,3 +159,4 @@ function validateUpdate(req) {
 }
 
 export default router;
+export { validate };
