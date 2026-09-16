@@ -7,11 +7,11 @@ import type Category from "../Entities/Category";
 
 const apiClient = new APIClient<Category>('/categories');
 
-const useCategories =() => useQuery({
+const useCategories =() => useQuery({ 
     queryKey:['categories'],
     queryFn:()=>
         apiClient.getAll({}),
     staleTime: ms('5m'), //5 minutes
 });
 
-export default useCategories;
+export default useCategories; 

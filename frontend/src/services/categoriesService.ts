@@ -13,4 +13,4 @@ interface CreatePayload {
 export const create = (payload: CreatePayload) =>
   axiosInstance.post<Category>("/", payload).then((res) => {
     return res.data;
-  });
+  }); 

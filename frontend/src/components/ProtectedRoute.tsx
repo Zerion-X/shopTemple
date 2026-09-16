@@ -1,5 +1,4 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { Spinner, Box } from "@chakra-ui/react";
 import useUser from "../hooks/useUser";
 
 const ProtectedRoute = () => {
@@ -8,9 +7,9 @@ const ProtectedRoute = () => {
 
   if (isLoading) {
     return (
-      <Box display="flex" justifyContent="center" padding={10}>
-        <Spinner />
-      </Box>
+      <div className="flex justify-center p-10">
+        <div className="size-6 animate-spin rounded-full border-2 border-[#F5BFC9] border-t-[#C93663]" />
+      </div>
     );
   }
 

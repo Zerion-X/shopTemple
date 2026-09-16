@@ -1,17 +1,18 @@
-import { Box } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 
 const MainLayout = () => {
   return (
-    <Box minHeight="100vh" display="flex" flexDirection="column">
+    <div className="flex min-h-screen flex-col">
       <NavBar />
-      <Box padding={5} flex="1">
+
+      <div className="flex-1 p-5">
         <Outlet />
-      </Box>
+      </div>
+
       <Footer />
-    </Box>
+    </div>
   );
 };
 

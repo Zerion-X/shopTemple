@@ -1,15 +1,14 @@
-import { Box } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import Footer from "../components/Footer";
 
 const AdminLayout = () => {
   return (
-    <Box minHeight="100vh" display="flex" flexDirection="column">
-      <Box padding={5} flex="1">
+    <div className="flex min-h-screen flex-col">
+      <div className="flex-1 p-5">
         <Outlet />
-      </Box>
+      </div>
       <Footer />
-    </Box>
+    </div>
   );
 };
 

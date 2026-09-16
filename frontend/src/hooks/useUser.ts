@@ -9,6 +9,6 @@ const useUser =() => useQuery({
         refetchOnWindowFocus:false,
         refetchOnMount: "always",
         retry:false
-});
+}); 
 
 export default useUser;
