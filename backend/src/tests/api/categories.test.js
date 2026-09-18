@@ -69,18 +69,10 @@ afterAll(async () => {
 
 
 describe("GET /api/categories", () => {
-
+    
     it("should return the categories", async () => {
-        const agent = request.agent(app);
-
-        await agent
-            .post("/api/auth/login")
-            .send({
-                email: "adminCategoryTest@gmail.com",
-                password: "12345678"
-            });
-
-        const res = await agent.get("/api/categories");
+        const res = await request(app)
+            .get("/api/categories");
 
         expect(res.status).toBe(200);
 
@@ -163,6 +155,13 @@ describe("POST /api/categories", () => {
             });
 
         expect(res.status).toBe(201);
+
+        expect(res.body).toEqual(
+            expect.objectContaining({
+                category_id: expect.any(Number),
+                name: "valid-name",
+            })
+        );
     });
 
 });
@@ -234,6 +233,35 @@ describe("PATCH /api/categories/:id", () => {
         expect(res.body.error).toBe("No fields to update");
     });
 
+    it("should return 409 if such name already exists", async () => {
+        const agent = request.agent(app);
+
+        await agent
+            .post("/api/auth/login")
+            .send({
+                email: "adminCategoryTest@gmail.com",
+                password: "12345678"
+            });
+        
+        const new_test = await createCategory(
+            "new_test_name",
+            "new-image-url",
+            "new-imagePublicId"
+        );
+
+        const newId = new_test.insertId;
+
+        const res = await agent
+            .patch(`/api/categories/${newId}`)
+            .send({
+                name: "Cattest"
+            });
+
+        expect(res.status).toBe(409);
+        
+        expect(res.body.error).toBe("Such name already exists");
+    });
+
     it("should return 200 and the updated category if everything is valid", async () => {
         const agent = request.agent(app);
 
@@ -276,7 +304,7 @@ describe("DELETE /api/categories/:id", () => {
             });
         
         const res = await agent
-            .delete("/api/categories/999")
+            .delete("/api/categories/999");
             
         expect(res.status).toBe(404);
 
@@ -295,14 +323,14 @@ describe("DELETE /api/categories/:id", () => {
             });
         
         const res = await agent
-            .delete(`/api/categories/${deleteCategoryID}`)
+            .delete(`/api/categories/${deleteCategoryID}`);
         
         expect(res.status).toBe(204);
     });
 
 });
 
-describe(" Customer requesting", () =>{
+describe("Customer requesting", () =>{
     
     it("should return 403 if customer requesting POST", async () => {
         const agent = request.agent(app);
@@ -359,10 +387,7 @@ describe(" Customer requesting", () =>{
             });
 
         const res = await agent
-            .delete("/api/categories/999")
-            .send({
-                name: "something-something"
-            });
+            .delete("/api/categories/999");
         
         expect(res.status).toBe(403);
 
@@ -381,7 +406,7 @@ describe(" Customer requesting", () =>{
             });
 
         const res = await agent
-            .get("/api/categories")
+            .get("/api/categories");
         
         expect(res.status).toBe(200);
 
