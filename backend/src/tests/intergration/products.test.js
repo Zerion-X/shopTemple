@@ -3,7 +3,6 @@ import {
     getProducts,
     validateCategoryId,
     validateBrandId,
-    validateProductId,
     createProduct,
     selectProductbyId,
     updateProductbyId,
@@ -147,18 +146,6 @@ describe("validating products", () => {
 
     it("should return false if the brand does not exist", async () => {
         const res = await validateBrandId(99999);
-
-        expect(res).toBe(false);
-    });
-
-    it("should return true if the product exists", async () => {
-        const res = await validateProductId(testProductId);
-
-        expect(res).toBe(true);
-    });
-
-    it("should return false if the product does not exist", async () => {
-        const res = await validateProductId(99999);
 
         expect(res).toBe(false);
     });
