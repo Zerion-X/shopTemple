@@ -11,7 +11,7 @@ async function getProducts() {
             brand_id,
             category_id,
             image_url
-            FROM products
+        FROM products
         `);
     
     return products;
@@ -35,18 +35,18 @@ async function validateBrandId(brand_id) {
     return brands.length > 0;
 }
 
-async function validateProductId(product_id) {
-    const [products] = await pool.execute(
-        "SELECT product_id FROM products WHERE product_id = ?",
-        [product_id]
-    );
-
-    return products.length > 0;
-}
-
 async function createProduct(name, description, price, category_id, brand_id, imageUrl, imagePublicId) {
-    const [result] = await pool.execute(
-        "INSERT INTO products (name, description, price, category_id, brand_id, image_url, image_public_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    const [result] = await pool.execute(`
+        INSERT INTO products (
+                              name,
+                              description,
+                              price,
+                              category_id,
+                              brand_id,
+                              image_url,
+                              image_public_id
+                            ) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [name, description, price, category_id, brand_id, imageUrl, imagePublicId]
     );
 
@@ -119,8 +119,7 @@ async function checkDuplicateNameForUpdate(name, productId) {
 export { 
     getProducts,
     validateCategoryId, 
-    validateBrandId, 
-    validateProductId, 
+    validateBrandId,  
     createProduct, 
     selectProductbyId, 
     updateProductbyId,
