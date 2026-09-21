@@ -116,6 +116,63 @@ async function checkDuplicateNameForUpdate(name, productId) {
     return rows.length > 0;
 }
 
+async function getProductsByBrandId(brand_id) {
+    const [products] = await pool.execute(`
+        SELECT
+            product_id,
+            name,
+            description,
+            price,
+            created_at,
+            brand_id,
+            category_id,
+            image_url
+        FROM products
+        WHERE brand_id = ?`,
+        [brand_id]
+    );    
+
+    return products;
+}
+
+async function getProductsByCatId(category_id) {
+    const [products] = await pool.execute(`
+        SELECT
+            product_id,
+            name,
+            description,
+            price,
+            created_at,
+            brand_id,
+            category_id,
+            image_url
+        FROM products
+        WHERE category_id = ?`,
+        [category_id]
+    );    
+
+    return products;
+}
+
+async function getProductsById(product_id) {
+    const [products] = await pool.execute(`
+        SELECT
+            product_id,
+            name,
+            description,
+            price,
+            created_at,
+            brand_id,
+            category_id,
+            image_url
+        FROM products
+        WHERE product_id = ?`,
+        [product_id]
+    );    
+
+    return products;
+}
+
 export { 
     getProducts,
     validateCategoryId, 
@@ -127,5 +184,8 @@ export {
     selectImagePublicId,
     deleteProductbyId, 
     checkDuplicateNameForUpdate,
-    checkDuplicateNames 
+    checkDuplicateNames ,
+    getProductsByBrandId,
+    getProductsByCatId,
+    getProductsById
 };
