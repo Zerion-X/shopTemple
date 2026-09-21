@@ -79,6 +79,40 @@ async function adminDeleteReview(review_id) {
     );
 }
 
+router.get("/product/:product_id", arcjetProtect, async (req, res) => {
+    const productId = req.params.product_id;
+
+    if (!(await validateProductId(productId))) {
+        return res.status(404).json({
+            error: "Product not found"
+        });
+    }
+
+    const reviews = await getReviewsByProductId(productId);
+
+    res.json(reviews);
+});
+
+router.get("/user", arcjetProtect, auth, async (req, res) => {
+    const reviews = await getReviewsByUserId(req.user.user_id);
+
+    res.json(reviews);
+});
+
+router.get("/:review_id", arcjetProtect, async (req, res) => {
+    const reviewId = req.params.review_id;
+
+    const reviews = await getReviewById(reviewId);
+
+    if (reviews.length === 0) {
+        return res.status(404).json({
+            error: "Review not found"
+        });
+    }
+
+    res.json(reviews[0]);
+});
+
 export {
     validateProductId,
     getReviews,
@@ -87,5 +121,8 @@ export {
     deleteReview,
     findReviewIdByUserAndProduct,
     adminDeleteReview, 
-    updateReviewsBySetClause
+    updateReviewsBySetClause,
+    getReviewsByProductId,
+    getReviewsByUserId,
+    getReviewById
 };

@@ -11,13 +11,44 @@ import {
     deleteReview,
     findReviewIdByUserAndProduct,
     adminDeleteReview,
-    updateReviewsBySetClause
+    updateReviewsBySetClause,
+    getReviewsByProductId,
+    getReviewsByUserId,
+    getReviewById
 } from "../controllers/reviews.js";
 
 const router = express.Router();
 
 router.get("/", arcjetProtect, async (_, res) => {
     const reviews = await getReviews();
+
+    res.json(reviews);
+});
+
+router.get("/product/:product_id", arcjetProtect, async (req, res) => {
+    const productId = req.params.product_id;
+
+    if (!(await validateProductId(productId)))  return res.status(404).json({ error: "Product not found" });
+
+    const reviews = await getReviewsByProductId(productId);
+
+    res.json(reviews);
+});
+
+router.get("/user", arcjetProtect, auth, async (req, res) => {
+    const reviews = await getReviewsByUserId(req.user.user_id);
+
+    res.json(reviews);
+});
+
+router.get("/:review_id", arcjetProtect, async (req, res) => {
+    const review_id = req.params.review_id;
+
+    const reviews = await getReviewById(review_id);
+
+    if (reviews.length === 0) {
+        return res.status(404).json({ error: "Review not found" });
+    }
 
     res.json(reviews);
 });
