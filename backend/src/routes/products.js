@@ -17,13 +17,62 @@ import {
     selectImagePublicId,
     deleteProductbyId,
     checkDuplicateNameForUpdate,
-    checkDuplicateNames
+    checkDuplicateNames,
+    getProductsByBrandId,
+    getProductsByCatId,
+    getProductsById
 } from "../controllers/products.js";
 
 const router = express.Router();
 
 router.get("/", arcjetProtect, async (req, res) => {
     const products = await getProducts();
+
+    res.json(products);
+});
+
+router.get("/:product_id", arcjetProtect, async (req, res) => {
+    const product_id = req.params.product_id;
+
+    const products = await getProductsById(product_id);
+
+    if (products.length === 0) {
+        return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.json(products);
+});
+
+
+router.get("/category/:category_id", arcjetProtect, async (req, res) => {
+    const category_id = req.params.category_id;
+
+    if (!(await validateCategoryId(category_id))) {
+        return res.status(400).json({ error: "Invalid category_id" });
+    }
+
+    const products = await getProductsByCatId(category_id);
+
+    if (products.length === 0) {
+        return res.status(404).json({ error: "No products found for this category" });
+    }
+
+    res.json(products);
+});
+
+
+router.get("/brand/:brand_id", arcjetProtect, async (req, res) => {
+    const brand_id = req.params.brand_id;
+
+    if (!(await validateBrandId(brand_id))) {
+        return res.status(400).json({ error: "Invalid brand_id" });
+    }
+
+    const products = await getProductsByBrandId(brand_id);
+
+    if (products.length === 0) {
+        return res.status(404).json({ error: "No products found for this brand" });
+    }
 
     res.json(products);
 });
