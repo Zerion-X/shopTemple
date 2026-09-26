@@ -79,39 +79,56 @@ async function adminDeleteReview(review_id) {
     );
 }
 
-router.get("/product/:product_id", arcjetProtect, async (req, res) => {
-    const productId = req.params.product_id;
+async function getReviewsByProductId(product_id) {
+    const [reviews] = await pool.execute(`
+        SELECT
+            review_id,
+            rating,
+            comment,
+            created_at,
+            product_id,
+            user_id
+        FROM reviews
+        WHERE product_id = ?`,
+        [product_id]
+    );    
 
-    if (!(await validateProductId(productId))) {
-        return res.status(404).json({
-            error: "Product not found"
-        });
-    }
+    return reviews;
+}
 
-    const reviews = await getReviewsByProductId(productId);
+async function getReviewsByUserId(user_id) {
+    const [reviews] = await pool.execute(`
+        SELECT
+            review_id,
+            rating,
+            comment,
+            created_at,
+            product_id,
+            user_id
+        FROM reviews
+        WHERE user_id = ?`,
+        [user_id]
+    );    
 
-    res.json(reviews);
-});
+    return reviews;
+}
 
-router.get("/user", arcjetProtect, auth, async (req, res) => {
-    const reviews = await getReviewsByUserId(req.user.user_id);
+async function getReviewById(review_id) {
+    const [reviews] = await pool.execute(`
+        SELECT
+            review_id,
+            rating,
+            comment,
+            created_at,
+            product_id,
+            user_id
+        FROM reviews
+        WHERE review_id = ?`,
+        [review_id]
+    );    
 
-    res.json(reviews);
-});
-
-router.get("/:review_id", arcjetProtect, async (req, res) => {
-    const reviewId = req.params.review_id;
-
-    const reviews = await getReviewById(reviewId);
-
-    if (reviews.length === 0) {
-        return res.status(404).json({
-            error: "Review not found"
-        });
-    }
-
-    res.json(reviews[0]);
-});
+    return reviews;
+}
 
 export {
     validateProductId,
