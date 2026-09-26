@@ -1,5 +1,11 @@
+import BrandsShowcase from "../components/BrandsShowcase";
+
 const HomePage = () => {
-  return <div>HomePage</div>;
+  return (
+    <div>
+      <BrandsShowcase />
+    </div>
+  );
 };
 
 export default HomePage;
