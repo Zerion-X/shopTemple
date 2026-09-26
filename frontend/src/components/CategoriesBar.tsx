@@ -119,9 +119,16 @@ const CategoriesBar = () => {
               type="button"
               className="group flex w-[150px] shrink-0 flex-col items-center gap-4"
             >
-              {/* Temporary image placeholder */}
-              <div className="size-[92px] rounded-[42%] bg-[#C93663] transition-all duration-300 group-hover:scale-105 group-hover:bg-[#E96886] md:size-[105px]" />
-
+              {/* Category image */}
+              {category.image_url ? (
+                <img
+                  src={category.image_url}
+                  alt={category.name}
+                  className="size-[92px] rounded-[42%] object-cover transition-all duration-300 group-hover:scale-105 md:size-[105px]"
+                />
+              ) : (
+                <div className="size-[92px] rounded-[42%] bg-[#C93663] transition-all duration-300 group-hover:scale-105 md:size-[105px]" />
+              )}
               {/* Category name */}
               <span className="whitespace-nowrap text-[15px] font-medium uppercase tracking-[0.14em] text-[#875565] transition-colors duration-200 group-hover:text-[#C93663] md:text-[16px]">
                 {category.name}

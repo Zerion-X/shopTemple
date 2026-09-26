@@ -5,7 +5,7 @@ import type Category from "../Entities/Category";
 
 
 
-const apiClient = new APIClient<Category>('/categories');
+const apiClient = new APIClient<Category>('/categories'); 
 
 const useCategories =() => useQuery({ 
     queryKey:['categories'],
