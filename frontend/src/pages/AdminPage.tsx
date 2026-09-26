@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import useUser from "../hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../services/authService";
+import useUser from "../hooks/Auth/useUser";
 
 const AdminPage = () => {
   const navigate = useNavigate();

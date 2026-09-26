@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useSignup from "../hooks/useSignup";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
+import useSignup from "../hooks/Auth/useSignup";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -40,9 +40,7 @@ const RegisterPage = () => {
             Create an Account
           </h1>
 
-          <p className="text-sm text-[#875565]">
-            Sign up to get started
-          </p>
+          <p className="text-sm text-[#875565]">Sign up to get started</p>
         </div>
 
         {/* Form card */}
@@ -112,7 +110,8 @@ const RegisterPage = () => {
               {/* Error */}
               {error && (
                 <p className="rounded-lg bg-[#FCE1E5] px-3 py-2 text-sm text-[#C93663]">
-                  {isAxiosError(error) && typeof error.response?.data === "string"
+                  {isAxiosError(error) &&
+                  typeof error.response?.data === "string"
                     ? error.response.data
                     : "Something went wrong. Please try again."}
                 </p>
@@ -153,4 +152,3 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
-

@@ -1,37 +1,19 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { create, remove } from "../services/categoriesService";
-import useCategories from "../hooks/useCategories";
+import useCategories from "../hooks/Category/useCategories";
+import useCategoriesCreate from "../hooks/Category/useCatgoriesCreate";
+import useCategoriesDelete from "../hooks/Category/useCategoriesDelete";
 
 const CategoryManagementPage = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const queryClient = useQueryClient();
 
   const { data: categories, isFetching, isError } = useCategories();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-      setName("");
-      setImage(null);
-      setPreview(null);
-      setError("");
-    },
-    onError: () => {
-      setError("Failed to create category. Please try again.");
-    },
-  });
-
-  const { mutate: deleteCategory, isPending: isDeleting } = useMutation({
-    mutationFn: remove,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-    },
-  });
+  const { mutate, isPending } = useCategoriesCreate();
+  const { mutate: deleteCategory, isPending: isDeleting } =
+    useCategoriesDelete();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -49,7 +31,20 @@ const CategoryManagementPage = () => {
       return;
     }
 
-    mutate({ name: name.trim(), image });
+    mutate(
+      { name: name.trim(), image },
+      {
+        onSuccess: () => {
+          setName("");
+          setImage(null);
+          setPreview(null);
+          setError("");
+        },
+        onError: () => {
+          setError("Failed to create category. Please try again.");
+        },
+      },
+    );
   };
 
   return (

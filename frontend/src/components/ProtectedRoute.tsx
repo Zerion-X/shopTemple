@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import useUser from "../hooks/useUser";
+import useUser from "../hooks/Auth/useUser";
 
 const ProtectedRoute = () => {
   const { data: user, isLoading } = useUser();

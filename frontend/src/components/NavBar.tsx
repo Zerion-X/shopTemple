@@ -6,7 +6,7 @@ import { FiMenu } from "react-icons/fi";
 
 import SearchInput from "./SearchInput";
 import CategoriesBar from "./CategoriesBar";
-import useUser from "../hooks/useUser";
+import useUser from "../hooks/Auth/useUser";
 
 const NavBar = () => {
   const { data: user, isFetching } = useUser();

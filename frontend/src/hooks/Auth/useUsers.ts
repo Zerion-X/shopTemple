@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import APIClient from "../services/api-client";
-import type { LoginResponse } from "../services/authService";
 import ms from "ms";
+import APIClient from "../../services/api-client";
+import type { LoginResponse } from "../../services/authService";
 
 
 const apiClient = new APIClient<LoginResponse>('/users');

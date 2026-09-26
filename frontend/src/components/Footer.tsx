@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { FaGithub, FaInstagram, FaTwitter } from "react-icons/fa";
-import useUser from "../hooks/useUser";
+import useUser from "../hooks/Auth/useUser";
 
 const Footer = () => {
   const { data: user } = useUser();

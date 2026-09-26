@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { adminDeleteReview } from "../services/reviewsService";
+import { deleteReview } from "../../services/reviewsService";
 
-const useAdminDeleteReview = () => {
+const useReviewDeleteById = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (reviewId: number | string) => adminDeleteReview(reviewId),
+    mutationFn: (productId: number | string) => deleteReview(productId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews"] });
     },
   });
 };
 
-export default useAdminDeleteReview;
+export default useReviewDeleteById;

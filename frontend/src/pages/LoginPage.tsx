@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useLogin from "../hooks/useLogin";
+import useLogin from "../hooks/Auth/useLogin";
 import { useQueryClient } from "@tanstack/react-query";
 
 const LoginPage = () => {
@@ -38,9 +38,7 @@ const LoginPage = () => {
             Welcome Back
           </h1>
 
-          <p className="text-sm text-[#875565]">
-            Log in to your account
-          </p>
+          <p className="text-sm text-[#875565]">Log in to your account</p>
         </div>
 
         {/* Form card */}

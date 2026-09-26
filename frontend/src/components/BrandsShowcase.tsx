@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import useBrands from "../hooks/useBrands";
+import useBrands from "../hooks/Brand/useBrands";
 
 const AUTO_ADVANCE_MS = 4000;
 

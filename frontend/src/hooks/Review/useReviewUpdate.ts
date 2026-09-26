@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   updateReview,
   type UpdateReviewPayload,
-} from "../services/reviewsService";
+} from "../../services/reviewsService";
 
 const useReviewUpdate = () => {
   const queryClient = useQueryClient();

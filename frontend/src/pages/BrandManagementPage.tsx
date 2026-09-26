@@ -1,37 +1,18 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { create, remove } from "../services/brandsService";
-import useBrands from "../hooks/useBrands";
+import useBrands from "../hooks/Brand/useBrands";
+import useBrandsCreate from "../hooks/Brand/useBrandsCreate";
+import useBrandsDelete from "../hooks/Brand/useBrandsDelete";
 
 const BrandManagementPage = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState("");
-  const queryClient = useQueryClient();
 
   const { data: brands, isFetching, isError } = useBrands();
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: create,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["brands"] });
-      setName("");
-      setImage(null);
-      setPreview(null);
-      setError("");
-    },
-    onError: () => {
-      setError("Failed to create brand. Please try again.");
-    },
-  });
-
-  const { mutate: deleteBrand, isPending: isDeleting } = useMutation({
-    mutationFn: remove,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["brands"] });
-    },
-  });
+  const { mutate, isPending } = useBrandsCreate();
+  const { mutate: deleteBrand, isPending: isDeleting } = useBrandsDelete();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -49,7 +30,20 @@ const BrandManagementPage = () => {
       return;
     }
 
-    mutate({ name: name.trim(), image });
+    mutate(
+      { name: name.trim(), image },
+      {
+        onSuccess: () => {
+          setName("");
+          setImage(null);
+          setPreview(null);
+          setError("");
+        },
+        onError: () => {
+          setError("Failed to create brand. Please try again.");
+        },
+      },
+    );
   };
 
   return (

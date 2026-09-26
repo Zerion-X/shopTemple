@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-
-import useCategories from "../hooks/useCategories";
+import useCategories from "../hooks/Category/useCategories";
 
 const CategoriesBar = () => {
   const { data: categories, isFetching, error } = useCategories();

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getReviewById } from "../services/reviewsService";
+import { getReviewById } from "../../services/reviewsService";
 
 const useReviewById = (reviewId: number | string) =>
   useQuery({

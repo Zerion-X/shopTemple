@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { signup, type SignupPayload } from "../services/authService";
+import { signup, type SignupPayload } from "../../services/authService";
 
 
 const useSignup = () =>

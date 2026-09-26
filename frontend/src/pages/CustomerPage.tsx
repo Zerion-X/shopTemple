@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import useUser from "../hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../services/authService";
+import useUser from "../hooks/Auth/useUser";
 
 const CustomerPage = () => {
   const navigate = useNavigate();
@@ -47,9 +47,7 @@ const CustomerPage = () => {
               {user?.full_name}
             </h2>
 
-            <p className="mt-2 text-sm text-[#A85A70]">
-              ShopTemple customer
-            </p>
+            <p className="mt-2 text-sm text-[#A85A70]">ShopTemple customer</p>
 
             <div className="mt-8 h-px w-16 bg-[#F5BFC9]" />
 
@@ -108,9 +106,7 @@ const CustomerPage = () => {
                   className="group flex items-center justify-between rounded-2xl border border-[#F5BFC9] bg-[#FFFCFC] px-5 py-4 text-left transition-all duration-300 hover:border-[#E96886] hover:bg-[#FCE1E5]"
                 >
                   <div>
-                    <p className="font-medium text-[#79163F]">
-                      Wishlist
-                    </p>
+                    <p className="font-medium text-[#79163F]">Wishlist</p>
 
                     <p className="mt-1 text-xs text-[#A85A70]">
                       View your saved items
@@ -129,9 +125,7 @@ const CustomerPage = () => {
                   className="group flex items-center justify-between rounded-2xl border border-[#F5BFC9] bg-[#FFFCFC] px-5 py-4 text-left transition-all duration-300 hover:border-[#E96886] hover:bg-[#FCE1E5]"
                 >
                   <div>
-                    <p className="font-medium text-[#79163F]">
-                      Orders
-                    </p>
+                    <p className="font-medium text-[#79163F]">Orders</p>
 
                     <p className="mt-1 text-xs text-[#A85A70]">
                       View your order history
