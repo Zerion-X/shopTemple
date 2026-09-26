@@ -2,6 +2,7 @@ import { useState } from "react";
 import useCategories from "../hooks/Category/useCategories";
 import useCategoriesCreate from "../hooks/Category/useCatgoriesCreate";
 import useCategoriesDelete from "../hooks/Category/useCategoriesDelete";
+import axios from "axios";
 
 const CategoryManagementPage = () => {
   const [name, setName] = useState("");
@@ -40,8 +41,15 @@ const CategoryManagementPage = () => {
           setPreview(null);
           setError("");
         },
-        onError: () => {
-          setError("Failed to create category. Please try again.");
+        onError: (error) => {
+          if (axios.isAxiosError(error)) {
+            const data = error.response?.data;
+            const backendMessage =
+              typeof data === "string" ? data : (data?.message ?? data?.error);
+            setError(
+              backendMessage ?? "Failed to create brand. Please try again.",
+            );
+          }
         },
       },
     );

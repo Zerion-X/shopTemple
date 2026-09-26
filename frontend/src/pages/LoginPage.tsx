@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useLogin from "../hooks/Auth/useLogin";
 import { useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -92,7 +93,10 @@ const LoginPage = () => {
               {/* Error */}
               {error && (
                 <p className="rounded-lg bg-[#FCE1E5] px-3 py-2 text-sm text-[#C93663]">
-                  {error.message || "Invalid email or password."}
+                  {isAxiosError(error) &&
+                  typeof error.response?.data === "string"
+                    ? error.response.data
+                    : "Something went wrong. Please try again."}
                 </p>
               )}
 

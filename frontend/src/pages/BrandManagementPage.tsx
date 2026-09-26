@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+
 import useBrands from "../hooks/Brand/useBrands";
 import useBrandsCreate from "../hooks/Brand/useBrandsCreate";
 import useBrandsDelete from "../hooks/Brand/useBrandsDelete";
@@ -7,40 +9,56 @@ const BrandManagementPage = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { data: brands, isFetching, isError } = useBrands();
 
-  const { mutate, isPending } = useBrandsCreate();
+  const { mutate: createBrand, isPending } = useBrandsCreate();
   const { mutate: deleteBrand, isPending: isDeleting } = useBrandsDelete();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
+
     setImage(file);
     setPreview(file ? URL.createObjectURL(file) : null);
+    setErrorMessage("");
   };
 
   const handleSubmit = () => {
+    setErrorMessage("");
+
     if (!name.trim()) {
-      setError("Brand name is required.");
-      return;
-    }
-    if (!image) {
-      setError("An image is required.");
+      setErrorMessage("Brand name is required.");
       return;
     }
 
-    mutate(
-      { name: name.trim(), image },
+    if (!image) {
+      setErrorMessage("An image is required.");
+      return;
+    }
+
+    createBrand(
+      {
+        name: name.trim(),
+        image,
+      },
       {
         onSuccess: () => {
           setName("");
           setImage(null);
           setPreview(null);
-          setError("");
+          setErrorMessage("");
         },
-        onError: () => {
-          setError("Failed to create brand. Please try again.");
+
+        onError: (error) => {
+          if (axios.isAxiosError(error)) {
+            const data = error.response?.data;
+            const backendMessage =
+              typeof data === "string" ? data : (data?.message ?? data?.error);
+            setErrorMessage(
+              backendMessage ?? "Failed to create brand. Please try again.",
+            );
+          }
         },
       },
     );
@@ -55,6 +73,7 @@ const BrandManagementPage = () => {
 
         <div className="rounded-lg border border-gray-200 p-5 dark:border-gray-700">
           <div className="flex flex-col gap-4">
+            {/* Brand name */}
             <div className="flex flex-col gap-2">
               <label htmlFor="brand-name" className="text-sm font-medium">
                 Brand name
@@ -65,18 +84,24 @@ const BrandManagementPage = () => {
                 type="text"
                 placeholder="e.g. Fenty Beauty"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setErrorMessage("");
+                }}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSubmit();
+                  if (e.key === "Enter") {
+                    handleSubmit();
+                  }
                 }}
                 className={`rounded-md border bg-transparent px-3 py-2 outline-none ${
-                  error
+                  errorMessage
                     ? "border-red-500 focus:border-red-500"
                     : "border-gray-300 focus:border-cyan-500 dark:border-gray-600"
                 }`}
               />
             </div>
 
+            {/* Image */}
             <div className="flex flex-col gap-2">
               <label htmlFor="brand-image" className="text-sm font-medium">
                 Image
@@ -97,10 +122,14 @@ const BrandManagementPage = () => {
                   className="mt-2 h-24 w-24 rounded-md object-cover"
                 />
               )}
-
-              {error && <p className="text-sm text-red-500">{error}</p>}
             </div>
 
+            {/* Error */}
+            {errorMessage && (
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            )}
+
+            {/* Submit */}
             <button
               type="button"
               onClick={handleSubmit}
@@ -116,18 +145,22 @@ const BrandManagementPage = () => {
 
         <h2 className="text-xl font-semibold">All Brands</h2>
 
+        {/* Loading */}
         {isFetching && (
           <div className="flex justify-center py-8">
             <div className="size-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-gray-600 dark:border-t-white" />
           </div>
         )}
 
+        {/* Loading error */}
         {isError && <p className="text-red-500">Failed to load brands.</p>}
 
+        {/* Empty */}
         {!isFetching && !isError && brands?.length === 0 && (
           <p className="text-gray-500">No brands yet.</p>
         )}
 
+        {/* Brands */}
         <div className="flex flex-col gap-3">
           {brands?.map((brand) => (
             <div
@@ -142,8 +175,10 @@ const BrandManagementPage = () => {
                     className="h-10 w-10 rounded-md object-cover"
                   />
                 )}
+
                 <p className="font-medium">{brand.name}</p>
               </div>
+
               <button
                 type="button"
                 onClick={() => deleteBrand({ brand_id: brand.brand_id })}
