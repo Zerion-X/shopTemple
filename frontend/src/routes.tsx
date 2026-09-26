@@ -15,6 +15,7 @@ import ProductManagementPage from "./pages/ProductManagementPage";
 import AdminLayout from "./pages/AdminLayout";
 import OrderManagementPage from "./pages/OrderManagementPage";
 import UserManagementPage from "./pages/UserManagementPage";
+import BrandManagementPage from "./pages/BrandManagementPage";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,7 @@ const router = createBrowserRouter([
           { path: "categories", element: <CategoryManagementPage /> },
           { path: "products", element: <ProductManagementPage /> },
           { path: "orders", element: <OrderManagementPage /> },
+          { path: "brands", element: <BrandManagementPage /> },
         ],
       },
     ],

@@ -1,35 +1,35 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { create, remove } from "../services/categoriesService";
-import useCategories from "../hooks/useCategories";
+import { create, remove } from "../services/brandsService";
+import useBrands from "../hooks/useBrands";
 
-const CategoryManagementPage = () => {
+const BrandManagementPage = () => {
   const [name, setName] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState("");
   const queryClient = useQueryClient();
 
-  const { data: categories, isFetching, isError } = useCategories();
+  const { data: brands, isFetching, isError } = useBrands();
 
   const { mutate, isPending } = useMutation({
     mutationFn: create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
       setName("");
       setImage(null);
       setPreview(null);
       setError("");
     },
     onError: () => {
-      setError("Failed to create category. Please try again.");
+      setError("Failed to create brand. Please try again.");
     },
   });
 
-  const { mutate: deleteCategory, isPending: isDeleting } = useMutation({
+  const { mutate: deleteBrand, isPending: isDeleting } = useMutation({
     mutationFn: remove,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["brands"] });
     },
   });
 
@@ -41,7 +41,7 @@ const CategoryManagementPage = () => {
 
   const handleSubmit = () => {
     if (!name.trim()) {
-      setError("Category name is required.");
+      setError("Brand name is required.");
       return;
     }
     if (!image) {
@@ -55,21 +55,21 @@ const CategoryManagementPage = () => {
   return (
     <div className="mx-auto max-w-[700px] p-6">
       <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">Categories Management</h1>
+        <h1 className="text-2xl font-bold">Brands Management</h1>
 
         <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
 
         <div className="rounded-lg border border-gray-200 p-5 dark:border-gray-700">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-              <label htmlFor="category-name" className="text-sm font-medium">
-                Category name
+              <label htmlFor="brand-name" className="text-sm font-medium">
+                Brand name
               </label>
 
               <input
-                id="category-name"
+                id="brand-name"
                 type="text"
-                placeholder="e.g. Skincare"
+                placeholder="e.g. Fenty Beauty"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onKeyDown={(e) => {
@@ -84,12 +84,12 @@ const CategoryManagementPage = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="category-image" className="text-sm font-medium">
+              <label htmlFor="brand-image" className="text-sm font-medium">
                 Image
               </label>
 
               <input
-                id="category-image"
+                id="brand-image"
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
@@ -113,14 +113,14 @@ const CategoryManagementPage = () => {
               disabled={isPending}
               className="self-start rounded-md border border-gray-300 px-4 py-2 font-medium transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:hover:bg-gray-800"
             >
-              {isPending ? "Adding..." : "Add Category"}
+              {isPending ? "Adding..." : "Add Brand"}
             </button>
           </div>
         </div>
 
         <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
 
-        <h2 className="text-xl font-semibold">All Categories</h2>
+        <h2 className="text-xl font-semibold">All Brands</h2>
 
         {isFetching && (
           <div className="flex justify-center py-8">
@@ -128,33 +128,31 @@ const CategoryManagementPage = () => {
           </div>
         )}
 
-        {isError && <p className="text-red-500">Failed to load categories.</p>}
+        {isError && <p className="text-red-500">Failed to load brands.</p>}
 
-        {!isFetching && !isError && categories?.length === 0 && (
-          <p className="text-gray-500">No categories yet.</p>
+        {!isFetching && !isError && brands?.length === 0 && (
+          <p className="text-gray-500">No brands yet.</p>
         )}
 
         <div className="flex flex-col gap-3">
-          {categories?.map((category) => (
+          {brands?.map((brand) => (
             <div
-              key={category.category_id}
+              key={brand.brand_id}
               className="flex items-center justify-between rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             >
               <div className="flex items-center gap-3">
-                {category.image_url && (
+                {brand.image_url && (
                   <img
-                    src={category.image_url}
-                    alt={category.name}
+                    src={brand.image_url}
+                    alt={brand.name}
                     className="h-10 w-10 rounded-md object-cover"
                   />
                 )}
-                <p className="font-medium">{category.name}</p>
+                <p className="font-medium">{brand.name}</p>
               </div>
               <button
                 type="button"
-                onClick={() =>
-                  deleteCategory({ category_id: category.category_id })
-                }
+                onClick={() => deleteBrand({ brand_id: brand.brand_id })}
                 disabled={isDeleting}
                 className="rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950"
               >
@@ -168,4 +166,4 @@ const CategoryManagementPage = () => {
   );
 };
 
-export default CategoryManagementPage;
+export default BrandManagementPage;

@@ -85,6 +85,14 @@ const AdminPage = () => {
         >
           Categories Management
         </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/admin/brands")}
+          className="w-full rounded-md border border-gray-300 px-4 py-3 font-medium transition-colors hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-800"
+        >
+          Brands Management
+        </button>
       </div>
 
       <button

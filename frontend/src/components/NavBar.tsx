@@ -75,7 +75,7 @@ const NavBar = () => {
               aria-label="Login"
               className="rounded-full p-2.5 text-[#79163F] transition-colors hover:bg-[#FCE1E5] hover:text-[#C93663]"
             >
-              <CgProfile size={21} strokeWidth={0.5} />
+              Login
             </Link>
           )}
 

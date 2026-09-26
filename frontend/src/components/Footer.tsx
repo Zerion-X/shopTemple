@@ -1,7 +1,13 @@
 import { Link } from "react-router-dom";
 import { FaGithub, FaInstagram, FaTwitter } from "react-icons/fa";
+import useUser from "../hooks/useUser";
 
 const Footer = () => {
+  const { data: user } = useUser();
+
+  const isLoggedIn = !!user;
+  const path = user?.role === "admin" ? user.role : "profile";
+
   return (
     <footer className="mt-16 border-t border-[#efc1c9] bg-[#FFFCFC] px-5 py-7 text-[#875565]">
       <div className="flex flex-col items-center gap-5">
@@ -13,14 +19,21 @@ const Footer = () => {
           >
             Home
           </Link>
-
-          <Link
-            to="/profile"
-            className="transition-colors duration-200 hover:text-[#C93663]"
-          >
-            Profile
-          </Link>
-
+          {isLoggedIn ? (
+            <Link
+              to={`/${path}`}
+              className="transition-colors duration-200 hover:text-[#C93663]"
+            >
+              Profile
+            </Link>
+          ) : (
+            <Link
+              to={`/profile`}
+              className="transition-colors duration-200 hover:text-[#C93663]"
+            >
+              profile
+            </Link>
+          )}
           <Link
             to="/cart"
             className="transition-colors duration-200 hover:text-[#C93663]"
