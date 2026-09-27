@@ -1,5 +1,6 @@
 import express from "express";
 import Joi from "joi";
+import arcjetProtect from "../middleware/arcjet.js";
 import { auth } from "../middleware/auth.js";
 import { 
     getCurrentUser, 
@@ -9,10 +10,9 @@ import {
     getCurrentUserForPUT
 } from "../controllers/user.js";
 
-
 const router = express.Router();
 
-router.get("/", auth, async (req, res) => {
+router.get("/", arcjetProtect, auth, async (req, res) => {
     const users = await getCurrentUser(req.user.user_id);
 
     if ( users.length === 0)    return res.status(404).send("User not found");
@@ -20,7 +20,7 @@ router.get("/", auth, async (req, res) => {
     res.json(users[0]);
 });
 
-router.put("/", auth, async (req, res) => {
+router.put("/", arcjetProtect, auth, async (req, res) => {
     const { error } = validate(req.body);
 
     if (error)  return res.status(400).send(error.details[0].message);
@@ -46,7 +46,7 @@ router.put("/", auth, async (req, res) => {
 
 });
 
-router.delete("/", auth, async (req, res) => {
+router.delete("/",arcjetProtect, auth, async (req, res) => {
     await deleteUserById(req.user.user_id);
 
     res.status(204).send()
