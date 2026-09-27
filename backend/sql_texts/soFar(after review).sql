@@ -21,6 +21,7 @@ CREATE TABLE users (
   user_id INT NOT NULL AUTO_INCREMENT,
   full_name VARCHAR(45) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
+  address TEXT NULL,
   password VARCHAR(255) NOT NULL,
   role ENUM('admin','customer') NOT NULL DEFAULT 'customer',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -34,6 +35,7 @@ CREATE TABLE users (
 CREATE TABLE brands (
   brand_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(45) NOT NULL,
+  text TEXT NULL, 
   image_url VARCHAR(500) NULL,
   image_public_id VARCHAR(255) NULL,
   PRIMARY KEY (brand_id)
@@ -139,11 +141,12 @@ CREATE TABLE users (
   user_id INT NOT NULL AUTO_INCREMENT,
   full_name VARCHAR(45) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
+  address TEXT NULL,
   password VARCHAR(255) NOT NULL,
   role ENUM('admin','customer') NOT NULL DEFAULT 'customer',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
 -- BRANDS
@@ -152,6 +155,7 @@ CREATE TABLE users (
 CREATE TABLE brands (
   brand_id INT NOT NULL AUTO_INCREMENT,
   name VARCHAR(45) NOT NULL,
+  text TEXT NULL, 
   image_url VARCHAR(500) NULL,
   image_public_id VARCHAR(255) NULL,
   PRIMARY KEY (brand_id)
