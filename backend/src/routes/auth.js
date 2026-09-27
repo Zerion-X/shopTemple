@@ -1,5 +1,5 @@
-import express from "express"
-import Joi from "joi"
+import express from "express";
+import Joi from "joi";
 import { emailExists, createUser  } from "../controllers/signup.js"
 import { authenticateUser } from "../controllers/login.js";
 import { getCurrentUser } from "../controllers/user.js";
