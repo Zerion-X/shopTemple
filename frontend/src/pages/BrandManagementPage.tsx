@@ -7,6 +7,7 @@ import useBrandsDelete from "../hooks/Brand/useBrandsDelete";
 
 const BrandManagementPage = () => {
   const [name, setName] = useState("");
+  const [text, setText] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -41,10 +42,12 @@ const BrandManagementPage = () => {
       {
         name: name.trim(),
         image,
+        text: text.trim(),
       },
       {
         onSuccess: () => {
           setName("");
+          setText("");
           setImage(null);
           setPreview(null);
           setErrorMessage("");
@@ -98,6 +101,22 @@ const BrandManagementPage = () => {
                     ? "border-red-500 focus:border-red-500"
                     : "border-gray-300 focus:border-cyan-500 dark:border-gray-600"
                 }`}
+              />
+            </div>
+
+            {/* Text / tagline */}
+            <div className="flex flex-col gap-2">
+              <label htmlFor="brand-text" className="text-sm font-medium">
+                Description{" "}
+              </label>
+
+              <textarea
+                id="brand-text"
+                placeholder="A short description shown with the brand"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                rows={3}
+                className="rounded-md border border-gray-300 bg-transparent px-3 py-2 outline-none focus:border-cyan-500 dark:border-gray-600"
               />
             </div>
 
@@ -176,7 +195,12 @@ const BrandManagementPage = () => {
                   />
                 )}
 
-                <p className="font-medium">{brand.name}</p>
+                <div>
+                  <p className="font-medium">{brand.name}</p>
+                  {brand.text && (
+                    <p className="text-sm text-gray-500">{brand.text}</p>
+                  )}
+                </div>
               </div>
 
               <button

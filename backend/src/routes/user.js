@@ -7,47 +7,39 @@ import {
     updateUser, 
     deleteUserById, 
     emailExistsForOtherUser,
-    getCurrentUserForPUT
+    getCurrentUserForPUT,
+    getAllUsers
 } from "../controllers/user.js";
 
 const router = express.Router();
 
 router.get("/", arcjetProtect, auth, async (req, res) => {
-    const users = await getCurrentUser(req.user.user_id);
+    const users = await getAllUsers();
 
-    if ( users.length === 0)    return res.status(404).send("User not found");
-
-    res.json(users[0]);
+    res.json(users);
 });
 
-router.put("/", arcjetProtect, auth, async (req, res) => {
+router.put("/:id", arcjetProtect, auth, async (req, res) => {
     const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    if (error)  return res.status(400).send(error.details[0].message);
+    const targetId = req.params.id;
 
-    const users = await getCurrentUserForPUT(req.user.user_id);
+    const users = await getCurrentUserForPUT(targetId);
     const user = users[0];
+    if (!user) return res.status(404).send("User not found");
 
-    const email = req.body.email ?? user.email;
-    
-    const password = req.body.password ?? user.password;
-    
     const full_name = req.body.full_name ?? user.full_name;
-    
     const address = req.body.address ?? user.address;
 
-    if (await emailExistsForOtherUser(email, req.user.user_id))  return res.status(400).send("Email already exists");
+    await updateUser(targetId, full_name, address);
 
-    await updateUser(req.user.user_id, email, password, full_name, address);
-
-    const rows = await getCurrentUser(req.user.user_id);
-
+    const rows = await getCurrentUser(targetId);
     res.json(rows[0]);
-
 });
 
-router.delete("/",arcjetProtect, auth, async (req, res) => {
-    await deleteUserById(req.user.user_id);
+router.delete("/:id",arcjetProtect, auth, async (req, res) => {
+    await deleteUserById(req.params.id);
 
     res.status(204).send()
 });

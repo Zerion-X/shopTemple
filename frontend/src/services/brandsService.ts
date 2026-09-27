@@ -10,14 +10,17 @@ export const getBrands = () =>
   axiosInstance.get<Brand[]>("/").then((res) => res.data);
 
 interface CreatePayload {
-    name:string,
-    image:File
+  name: string;
+  image: File;
+  text: string;
 }
 
 export const create = (payload: CreatePayload) => {
   const formData = new FormData();
   formData.append("name", payload.name);
   formData.append("image", payload.image);
+  formData.append("text", payload.text);
+  
 
   return axiosInstance
     .post<Brand>("/", formData, {

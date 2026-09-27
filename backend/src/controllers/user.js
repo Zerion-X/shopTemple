@@ -10,6 +10,15 @@ async function getCurrentUser(id) {
     return users;
 };
 
+async function getAllUsers() {
+    const [users] = await pool.execute(
+      `SELECT user_id, full_name, email, address, role, created_at
+       FROM users`
+    );
+
+    return users;
+};
+
 async function getCurrentUserForPUT(id) {
     const [users] = await pool.execute(
       `SELECT user_id, full_name, password, email, address, role, created_at
@@ -20,10 +29,10 @@ async function getCurrentUserForPUT(id) {
     return users;
 };
 
-async function updateUser(user_id, email, password, full_name, address) {
+async function updateUser(user_id, full_name, address) {
     await pool.execute(
-        `UPDATE users SET email = ?, password = ?, full_name = ?, address = ? WHERE user_id = ?`,
-        [email, password, full_name, address, user_id]
+        `UPDATE users SET full_name = ?, address = ? WHERE user_id = ?`,
+        [full_name, address, user_id]
     );
 };
 
@@ -53,5 +62,6 @@ export {
     updateUser,  
     deleteUserById, 
     emailExistsForOtherUser,
-    getCurrentUserForPUT
+    getCurrentUserForPUT,
+    getAllUsers
 };

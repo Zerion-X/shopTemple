@@ -8,7 +8,7 @@ async function getBrands() {
 
 async function createBrand(name, text, imageUrl, imagePublicId) {
     const [result] = await pool.execute(
-        "INSERT INTO brands (name, text, image_url, image_public_id) VALUES (?, ?, ?)",
+        "INSERT INTO brands (name, text, image_url, image_public_id) VALUES (?, ?, ?, ?)",
         [name, text, imageUrl, imagePublicId]
     );
 

@@ -3,4 +3,5 @@ export default interface Brand {
     name:string
     image_url:string
     image:File
+    text:string
 }

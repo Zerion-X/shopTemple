@@ -77,6 +77,9 @@ const BrandsShowcase = () => {
             <h3 className="font-serif text-3xl text-[#79163F] md:text-4xl">
               {activeBrand.name}
             </h3>
+            {activeBrand.text && (
+              <p className="text-sm text-[#79163F]/80">{activeBrand.text}</p>
+            )}
             <span className="mt-2 inline-block border border-[#E7A9B7] px-6 py-2.5 text-sm font-medium text-[#C93663] transition-all duration-300 group-hover:border-[#C93663] group-hover:bg-[#FCE1E5]">
               Shop Now
             </span>

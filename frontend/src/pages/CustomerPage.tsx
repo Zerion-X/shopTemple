@@ -86,9 +86,7 @@ const CustomerPage = () => {
                   Address
                 </p>
 
-                <p className="text-sm text-[#79163F]">
-                  123 Main St, Baku, Azerbaijan
-                </p>
+                <p className="text-sm text-[#79163F]">{user?.address}</p>
               </div>
             </div>
 
