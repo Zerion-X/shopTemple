@@ -161,7 +161,7 @@ async function getProductsById(product_id) {
             name,
             description,
             price,
-            created_at,
+            created_at, 
             brand_id,
             category_id,
             image_url
