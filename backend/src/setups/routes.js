@@ -7,6 +7,7 @@ import categories from "../routes/categories.js";
 import products from "../routes/products.js";
 import brands from "../routes/brands.js";
 import reviews from "../routes/reviews.js";
+import users from "../routes/user.js";
 import { error } from "../middleware/error.js";
 
 export default function setupRoutes(app) {
@@ -17,6 +18,7 @@ export default function setupRoutes(app) {
     }));
     app.use(cookieParser());
     app.use('/api/auth', auth);
+    app.use('/api/user', users);
     app.use('/api/categories', categories);
     app.use('/api/products', products);
     app.use('/api/brands', brands);

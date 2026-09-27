@@ -48,7 +48,7 @@ async function updateReviewsBySetClause(setClause, values) {
     await pool.execute(
         `UPDATE reviews SET ${setClause}
          WHERE user_id = ? AND product_id = ?`,
-         values
+         values 
     );
 };
 
@@ -130,6 +130,13 @@ async function getReviewById(review_id) {
     return reviews;
 }
 
+async function updateReviewsByReviewId(rating, comment, review_id) {
+    await pool.execute(`
+        UPDATE reviews SET rating = ?, comment = ? WHERE review_id = ?`,
+        [review_id]
+    );
+};
+
 export {
     validateProductId,
     getReviews,
@@ -141,5 +148,6 @@ export {
     updateReviewsBySetClause,
     getReviewsByProductId,
     getReviewsByUserId,
-    getReviewById
+    getReviewById,
+    updateReviewsByReviewId
 };

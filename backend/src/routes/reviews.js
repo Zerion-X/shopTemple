@@ -14,7 +14,8 @@ import {
     updateReviewsBySetClause,
     getReviewsByProductId,
     getReviewsByUserId,
-    getReviewById
+    getReviewById,
+    updateReviewsByReviewId
 } from "../controllers/reviews.js";
 
 const router = express.Router();
@@ -85,6 +86,33 @@ router.post("/", arcjetProtect, auth, async (req, res) => {
     res.status(201).json(rows[0]);
 });
 
+router.put("/:product_id", arcjetProtect, auth, async (req, res) => {
+    const productId = req.params.product_id;
+
+    if (!(await validateProductId(productId)))  return res.status(400).json({ error: "Invalid product_id" });
+
+    const reviewsId = await findReviewIdByUserAndProduct(req.user.user_id, productId);
+
+    if (reviewsId === null) return res.status(404).json({ error: "Review not found" });
+
+    const { error } = validateUpdate(req.body);
+    
+    if (error)  return res.status(400).send(error.details[0].message);
+
+    const reviews = await getReviewById(reviewsId);
+    const review = reviews[0];
+
+    const rating = req.body.rating ?? review.rating;   
+    const comment = req.body.comment ?? review.comment; 
+    
+    await updateReviewsByReviewId(rating, comment, reviewsId);
+
+    const rows = await selectReviewById(reviewsId);
+    
+    res.json(rows[0]);
+
+});
+
 router.patch("/:product_id", arcjetProtect, auth, async (req, res) => {
     const productId = req.params.product_id;
 
@@ -94,7 +122,6 @@ router.patch("/:product_id", arcjetProtect, auth, async (req, res) => {
 
     if (reviewsId === null) return res.status(404).json({ error: "Review not found" });
 
-    
     const { error } = validateUpdate(req.body);
     
     if (error)  return res.status(400).send(error.details[0].message);
