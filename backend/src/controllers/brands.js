@@ -1,15 +1,15 @@
 import { pool } from "../lib/db.js";
 
 async function getBrands() {
-    const [brands] = await pool.execute("SELECT brand_id, name, image_url FROM brands");
+    const [brands] = await pool.execute("SELECT brand_id, name, text, image_url FROM brands");
 
     return brands;
 }
 
-async function createBrand(name, imageUrl, imagePublicId) {
+async function createBrand(name, text, imageUrl, imagePublicId) {
     const [result] = await pool.execute(
-        "INSERT INTO brands (name, image_url, image_public_id) VALUES (?, ?, ?)",
-        [name, imageUrl, imagePublicId]
+        "INSERT INTO brands (name, text, image_url, image_public_id) VALUES (?, ?, ?)",
+        [name, text, imageUrl, imagePublicId]
     );
 
     return result;
@@ -38,6 +38,7 @@ async function getUpdateBrandbyId(brandId) {
         `SELECT
             brand_id,
             name,
+            text,
             image_url
             FROM brands
             WHERE brand_id = ?`,

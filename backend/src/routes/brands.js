@@ -31,7 +31,7 @@ router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (re
     
     if (error) return res.status(400).send(error.details[0].message);
     
-    const { name } = req.body;
+    const { name, text } = req.body;
 
     if (await checkDuplicateNames(name)) return res.status(409).send("Such name already exists");
 
@@ -49,7 +49,7 @@ router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (re
         imagePublicId = result.public_id;
     }
 
-    const result = await createBrand(name, imageUrl, imagePublicId);
+    const result = await createBrand(name, text, imageUrl, imagePublicId);
         
     const brandId = result.insertId;
     
@@ -83,6 +83,7 @@ router.patch("/:id", arcjetProtect, auth, isAdmin, upload.single("image"), async
         }
 
         fieldsToUpdate.name = req.body.name;
+        fieldsToUpdate.text = req.body.text;
     }
 
     let oldImagePublicId = null;
@@ -145,7 +146,8 @@ function validate(req) {
   let schema;
   
   schema = Joi.object({
-      name: Joi.string().min(3).max(45).required()
+      name: Joi.string().min(3).max(45).required(),
+      text: Joi.string().min(3).max(200)
   });
 
   return schema.validate(req);
@@ -153,7 +155,8 @@ function validate(req) {
 
 function validateUpdate(req) {
     const schema = Joi.object({
-        name: Joi.string().min(3).max(45)
+        name: Joi.string().min(3).max(45),
+        text: Joi.string().min(3).max(200)
     });
 
     return schema.validate(req);
