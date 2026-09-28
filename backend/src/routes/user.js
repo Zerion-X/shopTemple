@@ -6,7 +6,6 @@ import {
     getCurrentUser, 
     updateUser, 
     deleteUserById, 
-    emailExistsForOtherUser,
     getCurrentUserForPUT,
     getAllUsers
 } from "../controllers/user.js";
@@ -31,8 +30,9 @@ router.put("/:id", arcjetProtect, auth, async (req, res) => {
 
     const full_name = req.body.full_name ?? user.full_name;
     const address = req.body.address ?? user.address;
+    const password = req.body.password ?? user.password;
 
-    await updateUser(targetId, full_name, address);
+    await updateUser(targetId, password, full_name, address);
 
     const rows = await getCurrentUser(targetId);
     res.json(rows[0]);
@@ -48,7 +48,6 @@ function validate(req) {
     let schema;
 
     schema = Joi.object({
-        email: Joi.string().min(5).max(255).email(),
         password: Joi.string().min(8).max(1024),
         full_name: Joi.string().min(3).max(50),
         address: Joi.string().min(10).max(500).allow(null, "")
