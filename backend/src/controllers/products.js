@@ -1,7 +1,7 @@
 import { pool } from "../lib/db.js";
 
 async function getProducts() {
-    const [products] = await pool.execute(`
+  const [products] = await pool.execute(`
         SELECT
             product_id,
             name,
@@ -13,30 +13,39 @@ async function getProducts() {
             image_url
         FROM products
         `);
-    
-    return products;
-};
+
+  return products;
+}
 
 async function validateCategoryId(category_id) {
-    const [categories] = await pool.execute(
-        "SELECT category_id FROM categories WHERE category_id = ?",
-        [category_id]
-    );
+  const [categories] = await pool.execute(
+    "SELECT category_id FROM categories WHERE category_id = ?",
+    [category_id],
+  );
 
-    return categories.length > 0;
+  return categories.length > 0;
 }
 
 async function validateBrandId(brand_id) {
-    const [brands] = await pool.execute(
-        "SELECT brand_id FROM brands WHERE brand_id = ?",
-        [brand_id]
-    );
+  const [brands] = await pool.execute(
+    "SELECT brand_id FROM brands WHERE brand_id = ?",
+    [brand_id],
+  );
 
-    return brands.length > 0;
+  return brands.length > 0;
 }
 
-async function createProduct(name, description, price, category_id, brand_id, imageUrl, imagePublicId) {
-    const [result] = await pool.execute(`
+async function createProduct(
+  name,
+  description,
+  price,
+  category_id,
+  brand_id,
+  imageUrl,
+  imagePublicId,
+) {
+  const [result] = await pool.execute(
+    `
         INSERT INTO products (
                               name,
                               description,
@@ -47,77 +56,93 @@ async function createProduct(name, description, price, category_id, brand_id, im
                               image_public_id
                             ) 
                             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [name, description, price, category_id, brand_id, imageUrl, imagePublicId]
-    );
+    [name, description, price, category_id, brand_id, imageUrl, imagePublicId],
+  );
 
-    return result;
+  return result;
 }
 
 async function selectProductbyId(productId) {
-    const [rows] = await pool.execute(
-            "SELECT * FROM products WHERE product_id = ?",
-            [productId]
-        );
+  const [rows] = await pool.execute(
+    "SELECT * FROM products WHERE product_id = ?",
+    [productId],
+  );
 
-    return rows;
+  return rows;
 }
 
-async function updateProductbyId(name, description, price, category_id, brand_id, imageUrl, imagePublicId, productId) {
-    await pool.execute(
-        "UPDATE products SET name = ?, description = ?, price = ?, category_id = ?, brand_id = ?, image_url = ?, image_public_id = ? WHERE product_id = ?",
-        [name, description, price, category_id, brand_id, imageUrl, imagePublicId, productId]
-    );
+async function updateProductbyId(
+  name,
+  description,
+  price,
+  category_id,
+  brand_id,
+  imageUrl,
+  imagePublicId,
+  productId,
+) {
+  await pool.execute(
+    "UPDATE products SET name = ?, description = ?, price = ?, category_id = ?, brand_id = ?, image_url = ?, image_public_id = ? WHERE product_id = ?",
+    [
+      name,
+      description,
+      price,
+      category_id,
+      brand_id,
+      imageUrl,
+      imagePublicId,
+      productId,
+    ],
+  );
 }
 
 async function updateProducts(setClause, values) {
-    await pool.execute(
-        `UPDATE products SET ${setClause} WHERE product_id = ?`,
-        values
-    );   
+  await pool.execute(
+    `UPDATE products SET ${setClause} WHERE product_id = ?`,
+    values,
+  );
 }
 
 async function selectImagePublicId(productId) {
-    const [rows] = await pool.execute(
-            "SELECT image_public_id FROM products WHERE product_id = ?",
-            [productId]
-        );
-    
-    return rows;
+  const [rows] = await pool.execute(
+    "SELECT image_public_id FROM products WHERE product_id = ?",
+    [productId],
+  );
+
+  return rows;
 }
 
 async function deleteProductbyId(productId) {
-    await pool.execute(
-        "DELETE FROM products WHERE product_id = ?", 
-        [productId]
-    );
+  await pool.execute("DELETE FROM products WHERE product_id = ?", [productId]);
 }
 
 async function checkDuplicateNames(name) {
-    const [rows] = await pool.execute(
-        `SELECT name
+  const [rows] = await pool.execute(
+    `SELECT name
          FROM products
          WHERE name = ?
          LIMIT 1`,
-        [name]
-    );
+    [name],
+  );
 
-    return rows.length > 0;
+  return rows.length > 0;
 }
 
 async function checkDuplicateNameForUpdate(name, productId) {
-    const [rows] = await pool.execute(
-        `SELECT product_id
+  const [rows] = await pool.execute(
+    `SELECT product_id
          FROM products
          WHERE name = ? AND product_id != ?
          LIMIT 1`,
-        [name, productId]
-    );
+    [name, productId],
+  );
 
-    return rows.length > 0;
+  return rows.length > 0;
 }
 
 async function getProductsByBrandId(brand_id) {
-    const [products] = await pool.execute(`
+  const [products] = await pool.execute(
+    `
         SELECT
             product_id,
             name,
@@ -129,14 +154,15 @@ async function getProductsByBrandId(brand_id) {
             image_url
         FROM products
         WHERE brand_id = ?`,
-        [brand_id]
-    );    
+    [brand_id],
+  );
 
-    return products;
+  return products;
 }
 
 async function getProductsByCatId(category_id) {
-    const [products] = await pool.execute(`
+  const [products] = await pool.execute(
+    `
         SELECT
             product_id,
             name,
@@ -148,14 +174,15 @@ async function getProductsByCatId(category_id) {
             image_url
         FROM products
         WHERE category_id = ?`,
-        [category_id]
-    );    
+    [category_id],
+  );
 
-    return products;
+  return products;
 }
 
 async function getProductsById(product_id) {
-    const [products] = await pool.execute(`
+  const [products] = await pool.execute(
+    `
         SELECT
             product_id,
             name,
@@ -167,25 +194,25 @@ async function getProductsById(product_id) {
             image_url
         FROM products
         WHERE product_id = ?`,
-        [product_id]
-    );    
+    [product_id],
+  );
 
-    return products;
+  return products;
 }
 
-export { 
-    getProducts,
-    validateCategoryId, 
-    validateBrandId,  
-    createProduct, 
-    selectProductbyId, 
-    updateProductbyId,
-    updateProducts, 
-    selectImagePublicId,
-    deleteProductbyId, 
-    checkDuplicateNameForUpdate,
-    checkDuplicateNames ,
-    getProductsByBrandId,
-    getProductsByCatId,
-    getProductsById
+export {
+  getProducts,
+  validateCategoryId,
+  validateBrandId,
+  createProduct,
+  selectProductbyId,
+  updateProductbyId,
+  updateProducts,
+  selectImagePublicId,
+  deleteProductbyId,
+  checkDuplicateNameForUpdate,
+  checkDuplicateNames,
+  getProductsByBrandId,
+  getProductsByCatId,
+  getProductsById,
 };

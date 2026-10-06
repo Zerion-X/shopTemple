@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 interface Props {
   brand_id?: number;
   category_id?: number;
+  onClearFilters?: () => void;
 }
 
-const ProductList = ({ brand_id, category_id }: Props) => {
+const ProductList = ({ brand_id, category_id, onClearFilters }: Props) => {
   const {
     data: products,
     isLoading,
@@ -22,7 +23,42 @@ const ProductList = ({ brand_id, category_id }: Props) => {
   if (isError) return <p>{error.message}</p>;
 
   if (!products || products.length === 0) {
-    return <p>No products found.</p>;
+    return (
+      <section className="mx-auto max-w-[1400px] px-5 py-14 md:px-8">
+        <div className="border border-[#F5BFC9] bg-[#FFFCFC] px-6 py-16 text-center shadow-sm">
+          {/* Decorative Icon */}
+          <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full border border-[#F5BFC9] bg-[#FFF4F5]">
+            <span className="font-serif text-2xl text-[#C93663]">✦</span>
+          </div>
+
+          {/* Heading */}
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.25em] text-[#C93663]">
+            Nothing Here Yet
+          </p>
+
+          <h2 className="font-serif text-3xl tracking-wide text-[#79163F]">
+            No Products Found
+          </h2>
+
+          {/* Description */}
+          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#9B6476]">
+            We couldn't find any products matching your current selection. Try
+            exploring another category or brand.
+          </p>
+
+          {/* Clear Filters */}
+          {onClearFilters && (
+            <button
+              type="button"
+              onClick={onClearFilters}
+              className="mt-7 border border-[#E7A9B7] px-7 py-3 text-xs font-medium uppercase tracking-[0.2em] text-[#C93663] transition-all duration-300 hover:border-[#C93663] hover:bg-[#FCE1E5]"
+            >
+              Clear Filters
+            </button>
+          )}
+        </div>
+      </section>
+    );
   }
 
   return (
