@@ -5,7 +5,7 @@ const HomePage = () => {
   return (
     <div>
       <BrandsShowcase />
-      <ProductCard type="list" category_id={1} brand_id={1} />
+      <ProductCard type="single" id={16} />
     </div>
   );
 };

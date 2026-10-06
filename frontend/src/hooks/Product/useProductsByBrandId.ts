@@ -5,12 +5,11 @@ import type Product from "../../Entities/Product";
 
 const apiClient = new APIClient<Product>("/products");
 
-const useProduct = (id: number) =>
+const useProductsByBrandId = (brand_id: number) =>
   useQuery({
-    queryKey: ["products", id],
-    queryFn: () => apiClient.get(id),
+    queryKey: ["products", "brand", brand_id],
+    queryFn: () => apiClient.getAll({} , `/brand/${brand_id}`),
     staleTime: ms("5m"),
   });
 
-export default useProduct;
- 
+export default useProductsByBrandId;

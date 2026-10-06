@@ -21,8 +21,16 @@ const SingleProduct = ({ id }: Props) => {
         <Link to="/" className="transition-colors hover:text-[#C93663]">
           Home
         </Link>
+
         <span>/</span>
-        <span className="text-[#C93663]">Product</span>
+
+        <Link to="/products" className="transition-colors hover:text-[#C93663]">
+          Products
+        </Link>
+
+        <span>/</span>
+
+        <span className="text-[#C93663]">{product.name}</span>
       </div>
 
       {/* Product Container */}
@@ -77,25 +85,37 @@ const SingleProduct = ({ id }: Props) => {
 
           {/* Product Details */}
           <div className="mt-8 space-y-4 border-t border-[#F5BFC9] pt-6">
+            {/* Product ID */}
             <div className="flex items-center justify-between text-sm">
               <span className="text-[#9B6476]">Product ID</span>
+
               <span className="font-medium text-[#79163F]">
                 #{product.product_id}
               </span>
             </div>
 
+            {/* Category */}
             <div className="flex items-center justify-between text-sm">
               <span className="text-[#9B6476]">Category</span>
-              <span className="font-medium text-[#79163F]">
-                #{product.category_id}
-              </span>
+
+              <Link
+                to={`/products/category/${product.category_id}`}
+                className="font-medium text-[#C93663] underline-offset-4 transition-colors hover:text-[#79163F] hover:underline"
+              >
+                View Category
+              </Link>
             </div>
 
+            {/* Brand */}
             <div className="flex items-center justify-between text-sm">
               <span className="text-[#9B6476]">Brand</span>
-              <span className="font-medium text-[#79163F]">
-                #{product.brand_id}
-              </span>
+
+              <Link
+                to={`/products/brand/${product.brand_id}`}
+                className="font-medium text-[#C93663] underline-offset-4 transition-colors hover:text-[#79163F] hover:underline"
+              >
+                View Brand
+              </Link>
             </div>
           </div>
 

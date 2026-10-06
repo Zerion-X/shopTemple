@@ -31,18 +31,6 @@ router.get("/", arcjetProtect, async (req, res) => {
   res.json(products);
 });
 
-router.get("/:product_id", arcjetProtect, async (req, res) => {
-  const product_id = req.params.product_id;
-
-  const products = await getProductsById(product_id);
-
-  if (products.length === 0) {
-    return res.status(404).json({ error: "Product not found" });
-  }
-
-  res.json(products[0]);
-});
-
 router.get("/category/:category_id", arcjetProtect, async (req, res) => {
   const category_id = req.params.category_id;
 
@@ -51,12 +39,6 @@ router.get("/category/:category_id", arcjetProtect, async (req, res) => {
   }
 
   const products = await getProductsByCatId(category_id);
-
-  if (products.length === 0) {
-    return res
-      .status(404)
-      .json({ error: "No products found for this category" });
-  }
 
   res.json(products);
 });
@@ -70,11 +52,22 @@ router.get("/brand/:brand_id", arcjetProtect, async (req, res) => {
 
   const products = await getProductsByBrandId(brand_id);
 
+  res.json(products);
+});
+
+
+router.get("/:product_id", arcjetProtect, async (req, res) => {
+  const product_id = req.params.product_id;
+
+  const products = await getProductsById(product_id);
+
   if (products.length === 0) {
-    return res.status(404).json({ error: "No products found for this brand" });
+    return res.status(404).json({
+      error: "Product not found",
+    });
   }
 
-  res.json(products);
+  res.json(products[0]);
 });
 
 router.post(
