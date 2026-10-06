@@ -8,7 +8,7 @@ const apiClient = new APIClient<Product>("/products");
 const useProductsByCategoryId = (category_id: number) =>
   useQuery({
     queryKey: ["products", "category", category_id],
-    queryFn: () => apiClient.getAll({} , `/category/${category_id}`),
+    queryFn: () => apiClient.getAll({}, `/products/category/${category_id}`),
     staleTime: ms("5m"),
   });
 

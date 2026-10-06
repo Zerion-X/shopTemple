@@ -8,7 +8,7 @@ const apiClient = new APIClient<Product>("/products");
 const useProductsByBrandId = (brand_id: number) =>
   useQuery({
     queryKey: ["products", "brand", brand_id],
-    queryFn: () => apiClient.getAll({} , `/brand/${brand_id}`),
+    queryFn: () => apiClient.getAll({}, `/products/brand/${brand_id}`),
     staleTime: ms("5m"),
   });
 
