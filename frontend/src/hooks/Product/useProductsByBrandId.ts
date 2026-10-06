@@ -1,15 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import APIClient from "../../services/api-client";
-import ms from "ms";
-import type Product from "../../Entities/Product";
+import useProducts from "./useProducts";
 
-const apiClient = new APIClient<Product>("/products");
 
-const useProductsByBrandId = (brand_id: number) =>
-  useQuery({
-    queryKey: ["products", "brand", brand_id],
-    queryFn: () => apiClient.getAll({} , `/brand/${brand_id}`),
-    staleTime: ms("5m"),
+const useProductsByBrandId = (brand_id: number) => {
+  const { data: products, ...query } = useProducts();
+
+  const filteredProducts = products?.filter((product) => {
+    const matchesBrand =
+      brand_id === undefined || product.brand_id === brand_id;
+
+    return matchesBrand ;
   });
 
+  return {
+    data: filteredProducts,
+    ...query,
+  };
+}
 export default useProductsByBrandId;

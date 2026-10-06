@@ -121,7 +121,7 @@ const BrandProducts = () => {
             ))}
           </div>
         </>
-      )} 
+      )}
     </section>
   );
 };

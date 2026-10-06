@@ -1,15 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import APIClient from "../../services/api-client";
-import ms from "ms";
-import type Product from "../../Entities/Product";
+import useProducts from "./useProducts";
 
-const apiClient = new APIClient<Product>("/products");
 
 const useProductsByCategoryId = (category_id: number) =>
-  useQuery({
-    queryKey: ["products", "category", category_id],
-    queryFn: () => apiClient.getAll({} , `/category/${category_id}`),
-    staleTime: ms("5m"),
+  {const { data: products, ...query } = useProducts();
+
+  const filteredProducts = products?.filter((product) => {
+    const matchesCategory =
+      category_id === undefined || product.category_id === category_id;
+
+    return matchesCategory;
   });
+
+  return {
+    data: filteredProducts,
+    ...query,
+  };}
 
 export default useProductsByCategoryId;
