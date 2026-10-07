@@ -1,19 +1,12 @@
-import useProducts from "./useProducts";
+import { useQuery } from "@tanstack/react-query";
+import ms from "ms";
+import { getProductsByCategoryId } from "../../services/productService";
 
-
-const useProductsByCategoryId = (category_id: number) =>
-  {const { data: products, ...query } = useProducts();
-
-  const filteredProducts = products?.filter((product) => {
-    const matchesCategory =
-      category_id === undefined || product.category_id === category_id;
-
-    return matchesCategory;
+const useProductsByCategoryId = (id: number) =>
+  useQuery({
+    queryKey: ["products", "category", id],
+    queryFn: () => getProductsByCategoryId(id),
+    staleTime: ms("5m"),
   });
-
-  return {
-    data: filteredProducts,
-    ...query,
-  };}
 
 export default useProductsByCategoryId;

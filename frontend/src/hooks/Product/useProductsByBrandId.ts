@@ -1,19 +1,12 @@
-import useProducts from "./useProducts";
+import { useQuery } from "@tanstack/react-query";
+import ms from "ms";
+import { getProductsByBrandId } from "../../services/productService";
 
-
-const useProductsByBrandId = (brand_id: number) => {
-  const { data: products, ...query } = useProducts();
-
-  const filteredProducts = products?.filter((product) => {
-    const matchesBrand =
-      brand_id === undefined || product.brand_id === brand_id;
-
-    return matchesBrand ;
+const useProductsByBrandId = (id: number) =>
+  useQuery({
+    queryKey: ["products", "brand", id],
+    queryFn: () => getProductsByBrandId(id),
+    staleTime: ms("5m"),
   });
 
-  return {
-    data: filteredProducts,
-    ...query,
-  };
-}
 export default useProductsByBrandId;
