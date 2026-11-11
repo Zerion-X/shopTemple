@@ -3,10 +3,17 @@ import useProducts from "./useProducts";
 interface FilterOptions {
   brand_id?: number;
   category_id?: number;
+  searchText?: string;
 }
 
-const useFilteredProducts = ({ brand_id, category_id }: FilterOptions = {}) => {
+const useFilteredProducts = ({
+  brand_id,
+  category_id,
+  searchText,
+}: FilterOptions = {}) => {
   const { data: products, ...query } = useProducts();
+
+  const normalizedSearch = searchText?.trim().toLowerCase();
 
   const filteredProducts = products?.filter((product) => {
     const matchesBrand =
@@ -15,7 +22,12 @@ const useFilteredProducts = ({ brand_id, category_id }: FilterOptions = {}) => {
     const matchesCategory =
       category_id === undefined || product.category_id === category_id;
 
-    return matchesBrand && matchesCategory;
+    const matchesSearch =
+      !normalizedSearch ||
+      product.name.toLowerCase().includes(normalizedSearch) ||
+      product.description?.toLowerCase().includes(normalizedSearch);
+
+    return matchesBrand && matchesCategory && matchesSearch;
   });
 
   return {

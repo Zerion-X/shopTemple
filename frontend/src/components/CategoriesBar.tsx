@@ -1,152 +1,78 @@
-import { useEffect, useRef, useState } from "react";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+
+import { Link } from "react-router-dom";
 import useCategories from "../hooks/Category/useCategories";
 
-const CategoriesBar = () => {
-  const { data: categories, isFetching, error } = useCategories();
+interface Props {
+  onCategorySelect: () => void;
+}
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // NEW LOGIC: how many categories can actually fit.
-  const [visibleCount, setVisibleCount] = useState(1);
-
-  // NEW LOGIC: current page.
-  const [currentPage, setCurrentPage] = useState(0);
-
-  // NEW LOGIC: calculate based on the actual available width.
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const calculateVisibleCategories = () => {
-      if (!containerRef.current) return;
-
-      const width = containerRef.current.clientWidth;
-
-      /*
-       * Space reserved for the two navigation arrows.
-       * We also leave some breathing room around the categories.
-       */
-      const availableWidth = Math.max(0, width - 180);
-
-      /*
-       * Every category gets a predictable amount of space.
-       */
-      const categoryWidth = 150;
-
-      const count = Math.max(1, Math.floor(availableWidth / categoryWidth));
-
-      setVisibleCount(count);
-    };
-
-    calculateVisibleCategories();
-
-    const observer = new ResizeObserver(calculateVisibleCategories);
-
-    observer.observe(containerRef.current);
-
-    return () => observer.disconnect();
-  }, []);
-
-  const totalPages = Math.ceil((categories?.length ?? 0) / visibleCount);
-
-  // NEW LOGIC: prevent an invalid page after resizing.
-  useEffect(() => {
-    setCurrentPage((page) => Math.min(page, Math.max(0, totalPages - 1)));
-  }, [totalPages]);
-
-  const goNext = () => {
-    setCurrentPage((page) => Math.min(page + 1, totalPages - 1));
-  };
-
-  const goPrevious = () => {
-    setCurrentPage((page) => Math.max(page - 1, 0));
-  };
+const CategoriesBar = ({ onCategorySelect }: Props) => {
+  const { data: categories, isLoading, error } = useCategories();
 
   if (error) {
     return (
-      <p className="w-full bg-[#FFF4F5] px-5 py-3 text-sm text-[#C93663]">
+      <div className="border-t border-[#F5BFC9] bg-[#FFF4F5] px-6 py-4 text-center text-sm text-[#C93663]">
         {error.message}
-      </p>
-    );
-  }
-
-  if (isFetching) {
-    return (
-      <div className="flex h-[210px] w-full items-center justify-center border-t border-[#F5BFC9] bg-[#FFF4F5]">
-        <div className="size-5 animate-spin rounded-full border-2 border-[#F5BFC9] border-t-[#C93663]" />
       </div>
     );
   }
 
-  if (!categories?.length) {
-    return null;
+  if (isLoading) {
+    return (
+      <div className="border-t border-[#F5BFC9] bg-[#FFF4F5] px-6 py-8">
+        <div className="mx-auto flex max-w-6xl justify-center">
+          <div className="size-6 animate-spin rounded-full border-2 border-[#F5BFC9] border-t-[#C93663]" />
+        </div>
+      </div>
+    );
   }
 
-  const startIndex = currentPage * visibleCount;
-
-  const visibleCategories = categories.slice(
-    startIndex,
-    startIndex + visibleCount,
-  );
+  if (!categories?.length) return null;
 
   return (
-    <div className="w-full overflow-hidden border-t border-[#F5BFC9] bg-[#FFF4F5]">
-      <div
-        ref={containerRef}
-        className="relative flex min-h-[210px] w-full items-center overflow-hidden px-16 py-8"
-      >
-        {/* Previous */}
-        {currentPage > 0 && (
-          <button
-            type="button"
-            onClick={goPrevious}
-            aria-label="Previous categories"
-            className="absolute left-5 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#FCE1E5] p-3 text-[#79163F] shadow-sm transition-all duration-300 ease-out hover:scale-105 hover:bg-[#F5BFC9] hover:text-[#C93663] active:scale-95"
-          >
-            <FiChevronLeft size={22} />
-          </button>
-        )}
+    <div className="border-t border-[#F5BFC9] bg-[#FFF4F5] shadow-lg animate-[fadeIn_200ms_ease-out]">
+      <div className="mx-auto max-h-[65vh] max-w-[1400px] overflow-y-auto px-5 py-7 md:px-8">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-[#875565]">
+            Explore Categories
+          </h2>
 
-        {/* Category track */}
-        <div
-          key={currentPage}
-          className="flex w-full items-center justify-center gap-6 animate-[fadeIn_300ms_ease-out] md:gap-8 lg:gap-10"
-        >
-          {visibleCategories.map((category) => (
-            <button
+          <Link
+            to="/products"
+            onClick={onCategorySelect}
+            className="text-xs font-medium uppercase tracking-wider text-[#C93663] transition-colors hover:text-[#79163F]"
+          >
+            View all products →
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+          {categories.map((category) => (
+            <Link
               key={category.category_id}
-              type="button"
-              className="group flex w-[150px] shrink-0 flex-col items-center gap-4"
+              to={`/products/category/${category.category_id}`}
+              onClick={onCategorySelect}
+              className="group flex min-w-0 flex-col items-center gap-3 rounded-xl p-3 transition-colors duration-200 hover:bg-[#FCE1E5]"
             >
-              {/* Category image */}
               {category.image_url ? (
                 <img
                   src={category.image_url}
                   alt={category.name}
-                  className="size-[92px] rounded-[42%] object-cover transition-all duration-300 group-hover:scale-105 md:size-[105px]"
+                  loading="lazy"
+                  className="size-[76px] rounded-full object-cover shadow-sm transition-transform duration-300 group-hover:scale-105 sm:size-[84px]"
                 />
               ) : (
-                <div className="size-[92px] rounded-[42%] bg-[#C93663] transition-all duration-300 group-hover:scale-105 md:size-[105px]" />
+                <div className="flex size-[76px] items-center justify-center rounded-full bg-[#F5BFC9] font-serif text-2xl text-[#79163F] transition-transform duration-300 group-hover:scale-105 sm:size-[84px]">
+                  {category.name.charAt(0).toUpperCase()}
+                </div>
               )}
-              {/* Category name */}
-              <span className="whitespace-nowrap text-[15px] font-medium uppercase tracking-[0.14em] text-[#875565] transition-colors duration-200 group-hover:text-[#C93663] md:text-[16px]">
+
+              <span className="text-center text-xs font-medium uppercase tracking-[0.12em] text-[#875565] transition-colors group-hover:text-[#C93663] sm:text-sm">
                 {category.name}
               </span>
-            </button>
+            </Link>
           ))}
         </div>
-
-        {/* Next */}
-        {currentPage < totalPages - 1 && (
-          <button
-            type="button"
-            onClick={goNext}
-            aria-label="Next categories"
-            className="absolute right-5 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[#FCE1E5] p-3 text-[#79163F] shadow-sm transition-all duration-300 ease-out hover:scale-105 hover:bg-[#F5BFC9] hover:text-[#C93663] active:scale-95"
-          >
-            <FiChevronRight size={22} />
-          </button>
-        )}
       </div>
     </div>
   );

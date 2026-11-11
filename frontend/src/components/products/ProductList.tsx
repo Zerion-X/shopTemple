@@ -1,4 +1,5 @@
 import useFilteredProducts from "../../hooks/Product/useFilteredProducts";
+import useUserQueryStore from "../../store";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const ProductList = ({ brand_id, category_id, onClearFilters }: Props) => {
+  const searchText = useUserQueryStore((s) => s.userQuery.searchText);
+
   const {
     data: products,
     isLoading,
@@ -16,6 +19,7 @@ const ProductList = ({ brand_id, category_id, onClearFilters }: Props) => {
   } = useFilteredProducts({
     brand_id,
     category_id,
+    searchText,
   });
 
   if (isLoading) return <p>Loading products...</p>;
