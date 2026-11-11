@@ -17,6 +17,16 @@ async function getCategory() {
     return categories;
 }
 
+async function getCategoryById(categories_id) {
+    const [categories] = await pool.execute(
+        `SELECT category_id, name, image_url FROM categories
+        WHERE category_id = ?`,
+        [categories_id]
+    );
+
+    return categories;
+}
+
 async function checkDuplicateNames(name) {
     const [rows] = await pool.execute(
         `SELECT name
@@ -98,5 +108,6 @@ export {
     getUpdatedCatbyId, 
     selectImagePublicId, 
     deleteCatbyId, 
-    checkDuplicateNameForUpdate 
+    checkDuplicateNameForUpdate,
+    getCategoryById
 };

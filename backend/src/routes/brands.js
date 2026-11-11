@@ -26,6 +26,18 @@ router.get("/", arcjetProtect, async (req, res) => {
     res.json(brands);
 });
 
+router.get("/:brand_id", arcjetProtect, async (req, res) => {
+    const brand_id = req.params.brand_id;
+
+    const brands = await selectBrandbyId(brand_id);
+
+    if (brands.length === 0) {
+        return res.status(404).json({ error: "Brand not found" });
+    }
+    
+    res.json(brands);
+});
+
 router.post("/", arcjetProtect, auth, isAdmin, upload.single("image"), async (req, res) => {
     const { error } = validate(req.body);
     
