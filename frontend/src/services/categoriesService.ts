@@ -9,6 +9,9 @@ const axiosInstance = axios.create({
 export const getCategories = () =>
   axiosInstance.get<Category[]>("/").then((res) => res.data);
 
+export const getCategory = (categoryId: number | string) =>
+  axiosInstance.get<Category[]>(`/${categoryId}`).then((res) => res.data);
+
 interface CreatePayload {
   name: string;
   image: File;

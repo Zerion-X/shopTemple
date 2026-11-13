@@ -1,12 +1,18 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../services/authService";
 import useUser from "../hooks/Auth/useUser";
+import useUserUpdate from "../hooks/User/useUserUpdate";
 
 const CustomerPage = () => {
   const navigate = useNavigate();
   const { data: user } = useUser();
   const queryClient = useQueryClient();
+  const { mutate: updateUser, isPending, isError } = useUserUpdate();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [address, setAddress] = useState("");
 
   const handleLogout = async () => {
     try {
@@ -20,10 +26,32 @@ const CustomerPage = () => {
     }
   };
 
+  const handleEditAddress = () => {
+    setAddress(user?.address ?? "");
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const handleSaveAddress = () => {
+    if (!user || !address.trim()) return;
+
+    updateUser(
+      { userId: user.user_id, payload: { address: address.trim() } },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["profile"] });
+          setIsEditing(false);
+        },
+      },
+    );
+  };
+
   return (
     <div className="min-h-[calc(100vh-76px)] bg-[#FFF4F5] px-5 py-10 md:px-8 md:py-14">
       <div className="mx-auto max-w-[1100px]">
-        {/* Page heading */}
         <div className="mb-10">
           <p className="mb-2 text-xs font-medium uppercase tracking-[0.25em] text-[#C93663]">
             My Account
@@ -34,11 +62,8 @@ const CustomerPage = () => {
           </h1>
         </div>
 
-        {/* Main profile area */}
         <div className="grid gap-6 md:grid-cols-[0.85fr_1.5fr]">
-          {/* Profile card */}
           <section className="flex flex-col items-center justify-center rounded-3xl border border-[#F5BFC9] bg-[#FFFCFC] px-6 py-10 text-center shadow-sm">
-            {/* Avatar */}
             <div className="mb-6 flex size-28 items-center justify-center rounded-full bg-[#C93663] font-serif text-4xl text-white shadow-sm ring-8 ring-[#FCE1E5]">
               {user?.full_name?.charAt(0).toUpperCase() || "U"}
             </div>
@@ -56,7 +81,6 @@ const CustomerPage = () => {
             </p>
           </section>
 
-          {/* Account information */}
           <section className="rounded-3xl border border-[#F5BFC9] bg-[#FFFCFC] p-6 shadow-sm md:p-8">
             <div className="mb-7">
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#C93663]">
@@ -69,7 +93,6 @@ const CustomerPage = () => {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              {/* Email */}
               <div className="rounded-2xl bg-[#FFF4F5] p-5">
                 <p className="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-[#A85A70]">
                   Email
@@ -80,24 +103,71 @@ const CustomerPage = () => {
                 </p>
               </div>
 
-              {/* Address */}
               <div className="rounded-2xl bg-[#FFF4F5] p-5">
                 <p className="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-[#A85A70]">
                   Address
                 </p>
 
-                <p className="text-sm text-[#79163F]">{user?.address}</p>
+                {isEditing ? (
+                  <div className="space-y-3">
+                    <textarea
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      rows={3}
+                      placeholder="Enter your address"
+                      className="w-full resize-none rounded-xl border border-[#F5BFC9] bg-[#FFFCFC] px-3 py-2 text-sm text-[#79163F] outline-none transition-colors focus:border-[#C93663]"
+                    />
+
+                    {isError && (
+                      <p className="text-xs text-[#C93663]">
+                        Could not save address. Please try again.
+                      </p>
+                    )}
+
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={handleSaveAddress}
+                        disabled={isPending || !address.trim()}
+                        className="rounded-full bg-[#C93663] px-4 py-2 text-xs font-medium text-white transition-all duration-300 hover:bg-[#79163F] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {isPending ? "Saving..." : "Save"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleCancel}
+                        disabled={isPending}
+                        className="rounded-full border border-[#E7A9B7] px-4 py-2 text-xs font-medium text-[#C93663] transition-all duration-300 hover:border-[#C93663] hover:bg-[#FCE1E5] disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm text-[#79163F]">
+                      {user?.address || "No address added yet."}
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={handleEditAddress}
+                      className="mt-4 rounded-full border border-[#E7A9B7] px-4 py-2 text-xs font-medium text-[#C93663] transition-all duration-300 hover:border-[#C93663] hover:bg-[#FCE1E5]"
+                    >
+                      Add or change address
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Account actions */}
             <div className="mt-8 border-t border-[#F5E1E5] pt-7">
               <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-[#A85A70]">
                 Your ShopTemple
               </p>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                {/* Wishlist */}
                 <button
                   type="button"
                   onClick={() => navigate("/wishlist")}
@@ -116,7 +186,6 @@ const CustomerPage = () => {
                   </span>
                 </button>
 
-                {/* Orders */}
                 <button
                   type="button"
                   onClick={() => navigate("/orders")}
@@ -139,7 +208,6 @@ const CustomerPage = () => {
           </section>
         </div>
 
-        {/* Logout */}
         <div className="mt-8 flex justify-end">
           <button
             type="button"

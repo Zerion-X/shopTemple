@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { CiShoppingCart } from "react-icons/ci";
-import { FiMenu } from "react-icons/fi";
+import { FiMenu, FiX } from "react-icons/fi";
 
 import SearchInput from "./SearchInput";
 import CategoriesBar from "./CategoriesBar";
@@ -12,31 +13,35 @@ const NavBar = () => {
   const { data: user, isFetching } = useUser();
 
   const isLoggedIn = !!user;
-
-  // NEW LOGIC: controls whether the category menu is visible.
   const [showCategories, setShowCategories] = useState(false);
+
+  const closeCategories = () => setShowCategories(false);
 
   return (
     <header
       className="sticky top-0 z-50 w-full bg-[#FDEBED] text-[#79163F]"
-      onMouseLeave={() => setShowCategories(false)}
+      onMouseLeave={closeCategories}
     >
       {/* Main navbar */}
       <div className="mx-auto flex h-[76px] w-full max-w-[1600px] items-center px-5 md:px-8">
-        {/* Mobile menu */}
+        {/* Mobile category menu */}
         <button
           type="button"
+          onClick={() => setShowCategories((show) => !show)}
+          aria-label={showCategories ? "Close categories" : "Open categories"}
+          aria-expanded={showCategories}
           className="mr-4 rounded-full p-2 transition-colors hover:bg-[#FCE1E5] md:hidden"
-          aria-label="Open menu"
         >
-          <FiMenu size={22} strokeWidth={1.7} />
+          {showCategories ? <FiX size={22} /> : <FiMenu size={22} />}
         </button>
 
-        {/* Shop */}
+        {/* Desktop SHOP */}
         <div className="hidden md:block">
           <button
             type="button"
             onMouseEnter={() => setShowCategories(true)}
+            onClick={() => setShowCategories(true)}
+            aria-expanded={showCategories}
             className="relative py-2 text-[13px] font-medium tracking-[0.18em] text-[#79163F] after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-[#C93663] after:transition-all after:duration-300 hover:after:w-full"
           >
             SHOP
@@ -46,6 +51,7 @@ const NavBar = () => {
         {/* Brand */}
         <Link
           to="/"
+          onClick={closeCategories}
           className="absolute left-1/2 -translate-x-1/2 font-serif text-2xl tracking-[0.12em] text-[#79163F] md:text-3xl"
         >
           SHOPTEMPLE
@@ -95,11 +101,9 @@ const NavBar = () => {
         <SearchInput />
       </div>
 
-      {/* Categories */}
+      {/* Category dropdown */}
       {showCategories && (
-        <div onMouseEnter={() => setShowCategories(true)} className="w-full">
-          <CategoriesBar />
-        </div>
+        <CategoriesBar onCategorySelect={closeCategories} />
       )}
     </header>
   );

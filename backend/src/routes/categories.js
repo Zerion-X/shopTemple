@@ -15,7 +15,8 @@ import {
     getUpdatedCatbyId, 
     selectImagePublicId, 
     deleteCatbyId, 
-    checkDuplicateNameForUpdate 
+    checkDuplicateNameForUpdate,
+    getCategoryById
 } from "../controllers/categories.js";
 
 const router = express.Router();
@@ -23,6 +24,18 @@ const router = express.Router();
 router.get("/", arcjetProtect, async (req, res) => {
     
     const categories = await getCategory();
+    
+    res.json(categories);
+});
+
+router.get("/:category_id", arcjetProtect, async (req, res) => {
+    const category_id = req.params.category_id;
+
+    const categories = await getCategoryById(category_id);
+
+    if (categories.length === 0) {
+        return res.status(404).json({ error: "Category not found" });
+    }
     
     res.json(categories);
 });

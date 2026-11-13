@@ -9,6 +9,9 @@ const axiosInstance = axios.create({
 export const getBrands = () =>
   axiosInstance.get<Brand[]>("/").then((res) => res.data);
 
+export const getBrand = (brandId: number | string) =>
+  axiosInstance.get<Brand[]>(`/${brandId}`).then((res) => res.data);
+
 interface CreatePayload {
   name: string;
   image: File;

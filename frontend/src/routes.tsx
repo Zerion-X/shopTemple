@@ -16,6 +16,10 @@ import AdminLayout from "./pages/AdminLayout";
 import OrderManagementPage from "./pages/OrderManagementPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import BrandManagementPage from "./pages/BrandManagementPage";
+import SingleProductPage from "./pages/SingleProductPage";
+import AllProducts from "./components/products/AllProducts";
+import BrandProducts from "./components/products/BrandProducts";
+import CategoryProducts from "./components/products/CategoryProducts";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +36,13 @@ const router = createBrowserRouter([
           { path: "cart", element: <CartPage /> },
           { path: "wishlist", element: <WishlistPage /> },
           { path: "orders", element: <OrdersPage /> },
+          { path: "/products", element: <AllProducts /> },
+          { path: "/products/:id", element: <SingleProductPage /> },
+          { path: "/products/brand/:brand_id", element: <BrandProducts /> },
+          {
+            path: "/products/category/:category_id",
+            element: <CategoryProducts />,
+          },
         ],
       },
     ],
