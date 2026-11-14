@@ -50,7 +50,7 @@ const BrandsShowcase = () => {
 
       <div className="relative overflow-hidden border border-[#F5BFC9] bg-[#FFFCFC] shadow-sm">
         <Link
-          to={`/brands/${activeBrand.brand_id}`}
+          to={`/products/brand/${activeBrand.brand_id}`}
           className="group flex flex-col md:flex-row md:items-center"
         >
           {/* Image */}
