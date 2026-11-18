@@ -93,14 +93,6 @@ const SingleProduct = ({ id }: Props) => {
 
           <div className="mt-8 space-y-4 border-t border-[#F5BFC9] pt-6">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[#9B6476]">Product ID</span>
-
-              <span className="font-medium text-[#79163F]">
-                #{product.product_id}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between text-sm">
               <span className="text-[#9B6476]">Category</span>
 
               {isLoadingCat ? (

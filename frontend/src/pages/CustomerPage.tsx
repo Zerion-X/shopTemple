@@ -4,12 +4,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { logout } from "../services/authService";
 import useUser from "../hooks/Auth/useUser";
 import useUserUpdate from "../hooks/User/useUserUpdate";
+import { isAxiosError } from "axios";
 
 const CustomerPage = () => {
   const navigate = useNavigate();
   const { data: user } = useUser();
   const queryClient = useQueryClient();
-  const { mutate: updateUser, isPending, isError } = useUserUpdate();
+  const { mutate: updateUser, isPending, error } = useUserUpdate();
 
   const [isEditing, setIsEditing] = useState(false);
   const [address, setAddress] = useState("");
@@ -118,9 +119,13 @@ const CustomerPage = () => {
                       className="w-full resize-none rounded-xl border border-[#F5BFC9] bg-[#FFFCFC] px-3 py-2 text-sm text-[#79163F] outline-none transition-colors focus:border-[#C93663]"
                     />
 
-                    {isError && (
-                      <p className="text-xs text-[#C93663]">
-                        Could not save address. Please try again.
+                    {/* Error */}
+                    {error && (
+                      <p className="rounded-lg bg-[#FCE1E5] px-3 py-2 text-sm text-[#C93663]">
+                        {isAxiosError(error) &&
+                        typeof error.response?.data === "string"
+                          ? error.response.data
+                          : "Something went wrong. Please try again."}
                       </p>
                     )}
 
