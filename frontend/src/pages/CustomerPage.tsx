@@ -19,6 +19,9 @@ const CustomerPage = () => {
     try {
       await logout();
 
+      queryClient.setQueryData(["user"], null);
+      queryClient.removeQueries({ queryKey: ["user"] });
+
       queryClient.removeQueries({ queryKey: ["wishlist"] });
       queryClient.setQueryData(["profile"], null);
 

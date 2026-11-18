@@ -7,6 +7,7 @@ const useProducts = () =>
     queryKey: ["products"],
     queryFn: getProducts,
     staleTime: ms("5m"),
+    gcTime:ms("10m")
   });
 
 export default useProducts;
