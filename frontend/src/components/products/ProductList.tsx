@@ -1,5 +1,6 @@
 import useFilteredProducts from "../../hooks/Product/useFilteredProducts";
 import useUserQueryStore from "../../store";
+import WishlistButton from "../WishlistButton";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -87,6 +88,10 @@ const ProductList = ({ brand_id, category_id, onClearFilters }: Props) => {
             key={product.product_id}
             className="group overflow-hidden border border-[#F5BFC9] bg-[#FFFCFC] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           >
+            <WishlistButton
+              productId={product.product_id}
+              className="absolute right-3 top-3 z-10"
+            />
             {/* Image */}
             <Link
               to={`/products/${product.product_id}`}
