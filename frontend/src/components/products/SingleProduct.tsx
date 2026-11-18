@@ -1,6 +1,7 @@
 import useCategoryId from "../../hooks/Category/useCategory";
 import useBrandId from "../../hooks/Brand/useBrand";
 import useProduct from "../../hooks/Product/useProduct";
+import WishlistButton from "../WishlistButton";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -63,6 +64,10 @@ const SingleProduct = ({ id }: Props) => {
           <span className="absolute left-5 top-5 border border-[#F5BFC9] bg-[#FFFCFC]/90 px-4 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-[#C93663]">
             Beauty Essential
           </span>
+          <WishlistButton
+            productId={product.product_id}
+            className="absolute right-5 top-5 z-10"
+          />
         </div>
 
         <div className="flex flex-col justify-center px-7 py-10 md:px-12 md:py-14">
