@@ -7,6 +7,7 @@ USE shoptemple;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS wishlist;
 DROP TABLE IF EXISTS cart_items;
 DROP TABLE IF EXISTS carts;
 DROP TABLE IF EXISTS reviews;
@@ -163,6 +164,33 @@ CREATE TABLE cart_items (
     REFERENCES products (product_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- WISHLIST
+-- =========================================================
+
+CREATE TABLE wishlist (
+  user_id INT NOT NULL,
+  product_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (user_id, product_id),
+
+  INDEX fk_wishlist_products_idx (product_id),
+
+  CONSTRAINT fk_wishlist_users
+    FOREIGN KEY (user_id)
+    REFERENCES users (user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_wishlist_products
+    FOREIGN KEY (product_id)
+    REFERENCES products (product_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -177,6 +205,7 @@ USE shoptemple_test;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS wishlist;
 DROP TABLE IF EXISTS cart_items;
 DROP TABLE IF EXISTS carts;
 DROP TABLE IF EXISTS reviews;
@@ -333,6 +362,33 @@ CREATE TABLE cart_items (
     REFERENCES products (product_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- WISHLIST
+-- =========================================================
+
+CREATE TABLE wishlist (
+  user_id INT NOT NULL,
+  product_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (user_id, product_id),
+
+  INDEX fk_wishlist_products_idx (product_id),
+
+  CONSTRAINT fk_wishlist_users
+    FOREIGN KEY (user_id)
+    REFERENCES users (user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_wishlist_products
+    FOREIGN KEY (product_id)
+    REFERENCES products (product_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 SET FOREIGN_KEY_CHECKS = 1;
