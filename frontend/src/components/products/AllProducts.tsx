@@ -3,6 +3,20 @@ import { Link } from "react-router-dom";
 import useBrands from "../../hooks/Brand/useBrands";
 import useCategories from "../../hooks/Category/useCategories";
 import useFilteredProducts from "../../hooks/Product/useFilteredProducts";
+import ProductGridSkeleton from "../ProductGridSkeleton";
+import WishlistButton from "../WishlistButton";
+
+const FilterSkeleton = () => (
+  <div className="flex gap-2 overflow-hidden pb-1">
+    {[1, 2, 3, 4, 5].map((item) => (
+      <div
+        key={item}
+        className="h-9 w-24 shrink-0 animate-pulse bg-[#FCE1E5]"
+      />
+    ))}
+  </div>
+);
+
 const AllProducts = () => {
   const [brand_id, setBrandId] = useState<number | undefined>(undefined);
   const [category_id, setCategoryId] = useState<number | undefined>(undefined);
@@ -32,9 +46,7 @@ const AllProducts = () => {
               <div className="h-px flex-1 bg-[#F5BFC9]" />
             </div>
             {categoriesLoading ? (
-              <div className="flex justify-center py-3">
-                <div className="size-5 animate-spin border-2 border-[#F5BFC9] border-t-[#C93663]" />
-              </div>
+              <FilterSkeleton />
             ) : (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 <button
@@ -66,9 +78,7 @@ const AllProducts = () => {
               <div className="h-px flex-1 bg-[#F5BFC9]" />
             </div>
             {brandsLoading ? (
-              <div className="flex justify-center py-3">
-                <div className="size-5 animate-spin border-2 border-[#F5BFC9] border-t-[#C93663]" />
-              </div>
+              <FilterSkeleton />
             ) : (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 <button
@@ -96,9 +106,11 @@ const AllProducts = () => {
       {/* Products */}
       <section className="mx-auto max-w-[1400px] px-5 py-14 md:px-8">
         {isLoading && (
-          <p className="text-center text-sm text-[#9B6476]">
-            Loading products...
-          </p>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductGridSkeleton key={index} />
+            ))}
+          </div>
         )}
         {isError && (
           <p className="text-center text-sm text-red-500"> {error.message} </p>
@@ -146,6 +158,11 @@ const AllProducts = () => {
                   key={product.product_id}
                   className="group overflow-hidden border border-[#F5BFC9] bg-[#FFFCFC] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                 >
+                  <WishlistButton
+                    productId={product.product_id}
+                    className="absolute right-3 top-3 z-10"
+                  />
+
                   <Link
                     to={`/products/${product.product_id}`}
                     className="relative block aspect-[4/5] overflow-hidden bg-[#FFF4F5]"

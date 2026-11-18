@@ -5,7 +5,8 @@ import { getMe } from "../../services/authService";
 const useUser =() => useQuery({
     queryKey: ["profile"],
         queryFn: getMe,
-        staleTime:ms("0"),
+        staleTime:ms("10m"),
+        gcTime:ms("30m"),
         refetchOnWindowFocus:false,
         refetchOnMount: "always",
         retry:false

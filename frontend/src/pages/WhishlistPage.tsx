@@ -2,6 +2,21 @@ import { Link } from "react-router-dom";
 import useUser from "../hooks/Auth/useUser";
 import useWishlist from "../hooks/Wishlist/useWishlist";
 import WishlistButton from "../components/WishlistButton";
+import ProductGridSkeleton from "../components/ProductGridSkeleton";
+
+const WishlistSkeleton = () => (
+  <div className="min-h-[calc(100vh-76px)] bg-[#FFF4F5]">
+    <section className="mx-auto max-w-[1400px] px-5 py-14 md:px-8">
+      <div className="mb-10 text-center animate-pulse">
+        <div className="mx-auto mb-3 h-3 w-20 bg-[#FCE1E5]" />
+        <div className="mx-auto h-9 w-64 bg-[#FCE1E5]" />
+        <div className="mx-auto mt-4 h-3 w-48 bg-[#FFF0F2]" />
+      </div>
+
+      <ProductGridSkeleton count={8} />
+    </section>
+  </div>
+);
 
 const WishlistPage = () => {
   const { data: user } = useUser();
@@ -30,7 +45,7 @@ const WishlistPage = () => {
     );
   }
 
-  if (isLoading) return <p className="px-5 py-14">Loading wishlist...</p>;
+  if (isLoading) return <WishlistSkeleton />;
 
   if (isError) return <p className="px-5 py-14">{error.message}</p>;
 

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
@@ -10,7 +9,7 @@ import CategoriesBar from "./CategoriesBar";
 import useUser from "../hooks/Auth/useUser";
 
 const NavBar = () => {
-  const { data: user, isFetching } = useUser();
+  const { data: user, isPending } = useUser();
 
   const isLoggedIn = !!user;
   const [showCategories, setShowCategories] = useState(false);
@@ -65,7 +64,7 @@ const NavBar = () => {
           </div>
 
           {/* User */}
-          {isFetching ? (
+          {isPending ? (
             <div className="m-2 size-5 animate-spin rounded-full border-2 border-[#F5BFC9] border-t-[#C93663]" />
           ) : isLoggedIn ? (
             <Link
@@ -102,9 +101,7 @@ const NavBar = () => {
       </div>
 
       {/* Category dropdown */}
-      {showCategories && (
-        <CategoriesBar onCategorySelect={closeCategories} />
-      )}
+      {showCategories && <CategoriesBar onCategorySelect={closeCategories} />}
     </header>
   );
 };

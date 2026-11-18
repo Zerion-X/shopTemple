@@ -1,5 +1,6 @@
 import useFilteredProducts from "../../hooks/Product/useFilteredProducts";
 import useUserQueryStore from "../../store";
+import ProductGridSkeleton from "../ProductGridSkeleton";
 import WishlistButton from "../WishlistButton";
 import { Link } from "react-router-dom";
 
@@ -23,8 +24,19 @@ const ProductList = ({ brand_id, category_id, onClearFilters }: Props) => {
     searchText,
   });
 
-  if (isLoading) return <p>Loading products...</p>;
+  if (isLoading) {
+    return (
+      <section className="mx-auto max-w-[1400px] px-5 py-14 md:px-8">
+        <div className="mb-10 text-center animate-pulse">
+          <div className="mx-auto mb-3 h-3 w-24 bg-[#FCE1E5]" />
+          <div className="mx-auto h-9 w-64 bg-[#FCE1E5]" />
+          <div className="mx-auto mt-4 h-3 w-72 max-w-full bg-[#FFF0F2]" />
+        </div>
 
+        <ProductGridSkeleton count={8} />
+      </section>
+    );
+  }
   if (isError) return <p>{error.message}</p>;
 
   if (!products || products.length === 0) {
