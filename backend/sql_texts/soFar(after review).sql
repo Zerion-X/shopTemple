@@ -7,6 +7,8 @@ USE shoptemple;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS cart_items;
+DROP TABLE IF EXISTS carts;
 DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS categories;
@@ -26,7 +28,7 @@ CREATE TABLE users (
   role ENUM('admin','customer') NOT NULL DEFAULT 'customer',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- =========================================================
 -- BRANDS
@@ -112,6 +114,54 @@ CREATE TABLE reviews (
     FOREIGN KEY (user_id)
     REFERENCES users (user_id)
     ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- CARTS
+-- =========================================================
+
+CREATE TABLE carts (
+  cart_id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (cart_id),
+  UNIQUE KEY unique_user_cart (user_id),
+
+  CONSTRAINT fk_carts_users
+    FOREIGN KEY (user_id)
+    REFERENCES users (user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- CART ITEMS
+-- =========================================================
+
+CREATE TABLE cart_items (
+  cart_id INT NOT NULL,
+  product_id INT NOT NULL,
+  quantity INT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (cart_id, product_id),
+
+  INDEX fk_cart_items_products_idx (product_id),
+
+  CONSTRAINT chk_cart_items_quantity
+    CHECK (quantity > 0),
+
+  CONSTRAINT fk_cart_items_carts
+    FOREIGN KEY (cart_id)
+    REFERENCES carts (cart_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_cart_items_products
+    FOREIGN KEY (product_id)
+    REFERENCES products (product_id)
+    ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -127,6 +177,8 @@ USE shoptemple_test;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
+DROP TABLE IF EXISTS cart_items;
+DROP TABLE IF EXISTS carts;
 DROP TABLE IF EXISTS reviews;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS categories;
@@ -232,6 +284,54 @@ CREATE TABLE reviews (
     FOREIGN KEY (user_id)
     REFERENCES users (user_id)
     ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- CARTS
+-- =========================================================
+
+CREATE TABLE carts (
+  cart_id INT NOT NULL AUTO_INCREMENT,
+  user_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (cart_id),
+  UNIQUE KEY unique_user_cart (user_id),
+
+  CONSTRAINT fk_carts_users
+    FOREIGN KEY (user_id)
+    REFERENCES users (user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =========================================================
+-- CART ITEMS
+-- =========================================================
+
+CREATE TABLE cart_items (
+  cart_id INT NOT NULL,
+  product_id INT NOT NULL,
+  quantity INT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (cart_id, product_id),
+
+  INDEX fk_cart_items_products_idx (product_id),
+
+  CONSTRAINT chk_cart_items_quantity
+    CHECK (quantity > 0),
+
+  CONSTRAINT fk_cart_items_carts
+    FOREIGN KEY (cart_id)
+    REFERENCES carts (cart_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  CONSTRAINT fk_cart_items_products
+    FOREIGN KEY (product_id)
+    REFERENCES products (product_id)
+    ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
