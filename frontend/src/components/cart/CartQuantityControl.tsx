@@ -66,11 +66,21 @@ const CartQuantityControl = ({ productId }: Props) => {
     );
   }
 
-  return (
+  return quantity === 0 ? (
+    <button
+      type="button"
+      onClick={handleAdd}
+      disabled={isUpdating || addMutation.isPending}
+      className="w-full border border-rose-300 px-6 py-3 text-sm tracking-widest text-rose-800 transition hover:bg-rose-800 hover:text-white disabled:opacity-50"
+    >
+      Add to Cart
+    </button>
+  ) : (
     <div className="flex w-full items-center gap-3">
       {/* Quantity selector */}
       <div className="flex flex-[1.6] items-center justify-between border border-rose-300 px-5 py-2.5 text-rose-800">
         <button
+          type="button"
           onClick={handleDecrease}
           disabled={isUpdating}
           className="text-xl transition hover:text-rose-500 disabled:opacity-50"
@@ -84,8 +94,9 @@ const CartQuantityControl = ({ productId }: Props) => {
         </div>
 
         <button
+          type="button"
           onClick={handleIncrease}
-          disabled={isUpdating}
+          disabled={isUpdating || quantity >= 1000}
           className="text-xl transition hover:text-rose-500 disabled:opacity-50"
         >
           +
