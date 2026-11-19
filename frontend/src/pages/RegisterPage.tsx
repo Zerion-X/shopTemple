@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 import useSignup from "../hooks/Auth/useSignup";
+import { wishlistIdsKey } from "../hooks/Wishlist/useWishlistedIds";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const RegisterPage = () => {
     mutate(formData, {
       onSuccess: (user) => {
         queryClient.setQueryData(["profile"], user);
+        queryClient.setQueryData(wishlistIdsKey, []);
         navigate("/");
       },
     });

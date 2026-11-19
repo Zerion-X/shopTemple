@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useLogin from "../hooks/Auth/useLogin";
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { wishlistIdsKey } from "../hooks/Wishlist/useWishlistedIds";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -24,7 +25,10 @@ const LoginPage = () => {
 
     mutate(formData, {
       onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: ["profile"] });
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["profile"] }),
+          queryClient.invalidateQueries({ queryKey: wishlistIdsKey }),
+        ]);
         navigate("/");
       },
     });
