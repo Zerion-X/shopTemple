@@ -98,7 +98,7 @@ const ProductList = ({ brand_id, category_id, onClearFilters }: Props) => {
         {products.map((product) => (
           <div
             key={product.product_id}
-            className="group overflow-hidden border border-[#F5BFC9] bg-[#FFFCFC] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+            className="group relative overflow-hidden border border-[#F5BFC9] bg-[#FFFCFC] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
           >
             <WishlistButton
               productId={product.product_id}

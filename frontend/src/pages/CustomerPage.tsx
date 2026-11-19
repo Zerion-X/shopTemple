@@ -5,6 +5,7 @@ import { logout } from "../services/authService";
 import useUser from "../hooks/Auth/useUser";
 import useUserUpdate from "../hooks/User/useUserUpdate";
 import { isAxiosError } from "axios";
+import { wishlistIdsKey } from "../hooks/Wishlist/useWishlistedIds";
 
 const CustomerPage = () => {
   const navigate = useNavigate();
@@ -19,11 +20,10 @@ const CustomerPage = () => {
     try {
       await logout();
 
-      queryClient.setQueryData(["user"], null);
-      queryClient.removeQueries({ queryKey: ["user"] });
+      queryClient.setQueryData(["profile"], null);
 
       queryClient.removeQueries({ queryKey: ["wishlist"] });
-      queryClient.setQueryData(["profile"], null);
+      queryClient.setQueryData(wishlistIdsKey, []);
 
       navigate("/");
     } catch (err) {

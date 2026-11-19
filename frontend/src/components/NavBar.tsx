@@ -7,9 +7,11 @@ import { FiMenu, FiX } from "react-icons/fi";
 import SearchInput from "./SearchInput";
 import CategoriesBar from "./CategoriesBar";
 import useUser from "../hooks/Auth/useUser";
+import useWishlistIds from "../hooks/Wishlist/useWishlistedIds";
 
 const NavBar = () => {
   const { data: user, isPending } = useUser();
+  useWishlistIds();
 
   const isLoggedIn = !!user;
   const [showCategories, setShowCategories] = useState(false);
