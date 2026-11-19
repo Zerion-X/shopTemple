@@ -3,6 +3,7 @@ import useBrandId from "../../hooks/Brand/useBrand";
 import useProduct from "../../hooks/Product/useProduct";
 import WishlistButton from "../WishlistButton";
 import { Link } from "react-router-dom";
+import CartQuantityControl from "../cart/CartQuantityControl";
 
 const SingleProductSkeleton = () => (
   <section className="mx-auto max-w-[1200px] px-5 py-14 md:px-8 animate-pulse">
@@ -189,13 +190,9 @@ const SingleProduct = ({ id }: Props) => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {}}
-            className="mt-10 w-full bg-[#C93663] px-6 py-3 text-center text-xs font-medium uppercase tracking-[0.2em] text-[#FFFCFC] transition-all duration-300 hover:bg-[#79163F]"
-          >
-            Add to Cart
-          </button>
+          <div className="mt-10">
+            <CartQuantityControl productId={product.product_id} />
+          </div>
 
           <Link
             to="/products"
