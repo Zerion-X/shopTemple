@@ -8,10 +8,16 @@ import SearchInput from "./SearchInput";
 import CategoriesBar from "./CategoriesBar";
 import useUser from "../hooks/Auth/useUser";
 import useWishlistIds from "../hooks/Wishlist/useWishlistedIds";
+import useCart from "../hooks/Cart/useCart";
 
 const NavBar = () => {
   const { data: user, isPending } = useUser();
   useWishlistIds();
+
+  const { data: cart } = useCart();
+
+  const cartCount =
+    cart?.items.reduce((total, item) => total + item.quantity, 0) ?? 0;
 
   const isLoggedIn = !!user;
   const [showCategories, setShowCategories] = useState(false);
@@ -87,12 +93,20 @@ const NavBar = () => {
           )}
 
           {/* Cart */}
+
+          {/* Cart */}
           <Link
             to="/cart"
-            aria-label="Shopping cart"
-            className="rounded-full p-2.5 text-[#79163F] transition-colors hover:bg-[#FCE1E5] hover:text-[#C93663]"
+            aria-label={`Shopping cart${cartCount > 0 ? `, ${cartCount} items` : ""}`}
+            className="relative rounded-full p-2.5 text-[#79163F] transition-colors hover:bg-[#FCE1E5] hover:text-[#C93663]"
           >
             <CiShoppingCart size={24} strokeWidth={1} />
+
+            {cartCount > 0 && (
+              <span className="absolute right-0.5 top-0.5 flex size-[17px] items-center justify-center rounded-full bg-[#C93663] text-[10px] font-semibold text-white">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </div>
