@@ -51,3 +51,10 @@ export interface CreateOrderResponse {
   order_id: number;
   total_amount: number;
 }
+
+export const orderKeys = {
+  all: ["orders"] as const,
+  mine: ["orders", "mine"] as const,
+  admin: ["orders", "admin"] as const,
+  detail: (id: number) => ["orders", "detail", id] as const,
+};
