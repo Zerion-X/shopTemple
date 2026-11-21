@@ -3,19 +3,9 @@ import { Link } from "react-router-dom";
 import useBrands from "../../hooks/Brand/useBrands";
 import useCategories from "../../hooks/Category/useCategories";
 import useFilteredProducts from "../../hooks/Product/useFilteredProducts";
-import ProductGridSkeleton from "../ProductGridSkeleton";
+import ProductGridSkeleton from "../Skeletons/ProductGridSkeleton";
 import WishlistButton from "../WishlistButton";
-
-const FilterSkeleton = () => (
-  <div className="flex gap-2 overflow-hidden pb-1">
-    {[1, 2, 3, 4, 5].map((item) => (
-      <div
-        key={item}
-        className="h-9 w-24 shrink-0 animate-pulse bg-[#FCE1E5]"
-      />
-    ))}
-  </div>
-);
+import FilterSkeleton from "../Skeletons/FilterSkeleton";
 
 const AllProducts = () => {
   const [brand_id, setBrandId] = useState<number | undefined>(undefined);

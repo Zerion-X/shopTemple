@@ -1,6 +1,6 @@
 import useFilteredProducts from "../../hooks/Product/useFilteredProducts";
 import useUserQueryStore from "../../store";
-import ProductGridSkeleton from "../ProductGridSkeleton";
+import ProductGridSkeleton from "../Skeletons/ProductGridSkeleton";
 import WishlistButton from "../WishlistButton";
 import { Link } from "react-router-dom";
 
