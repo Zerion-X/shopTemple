@@ -20,6 +20,7 @@ import SingleProductPage from "./pages/SingleProductPage";
 import AllProducts from "./components/products/AllProducts";
 import BrandProducts from "./components/products/BrandProducts";
 import CategoryProducts from "./components/products/CategoryProducts";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
           { path: "cart", element: <CartPage /> },
           { path: "wishlist", element: <WishlistPage /> },
           { path: "orders", element: <OrdersPage /> },
+          { path: "orders/:id", element: <OrderDetailsPage /> },
           { path: "/products", element: <AllProducts /> },
           { path: "/products/:id", element: <SingleProductPage /> },
           { path: "/products/brand/:brand_id", element: <BrandProducts /> },
