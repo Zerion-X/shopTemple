@@ -9,6 +9,7 @@ import brands from "../routes/brands.js";
 import reviews from "../routes/reviews.js";
 import users from "../routes/user.js";
 import cart from "../routes/cart.js";
+import orders from "../routes/orders.js";
 import wishlistRouter from "../routes/wishlist.js";
 import { error } from "../middleware/error.js";
 
@@ -26,6 +27,7 @@ export default function setupRoutes(app) {
     app.use('/api/brands', brands);
     app.use('/api/reviews', reviews);
     app.use("/api/cart", cart);
+    app.use("/api/orders", orders);
     app.use("/api/wishlist", wishlistRouter);
     app.use(error);
 }
