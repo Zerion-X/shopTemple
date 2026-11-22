@@ -11,6 +11,7 @@ import users from "../routes/user.js";
 import cart from "../routes/cart.js";
 import orders from "../routes/orders.js";
 import wishlistRouter from "../routes/wishlist.js";
+import homeRoutes from "../routes/home.js";
 import { error } from "../middleware/error.js";
 
 export default function setupRoutes(app) {
@@ -29,5 +30,6 @@ export default function setupRoutes(app) {
     app.use("/api/cart", cart);
     app.use("/api/orders", orders);
     app.use("/api/wishlist", wishlistRouter);
+    app.use("/api/home",homeRoutes);
     app.use(error);
 }
