@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import useBrands from "../hooks/Brand/useBrands";
-import BrandShowcaseSkeleton from "./Skeletons/BrandShowcaseSkeleton";
+import useBrands from "../../hooks/Brand/useBrands";
+import BrandShowcaseSkeleton from "../Skeletons/BrandShowcaseSkeleton";
 
 const AUTO_ADVANCE_MS = 4000;
 
